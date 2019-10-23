@@ -1,0 +1,11 @@
+放到github：
+
+先建立一个空的 github项目 grubconfig，然后：
+
+werner@debian-01:/media/werner/e3e084db-7f7f-47cb-866b-743b7c5758ec$ git push --set-upstream https://github.com/hongyi-zhao/grubconfig.git master
+
+然后，使用下面的设定：
+
+werner@debian-01:/media/werner/e3e084db-7f7f-47cb-866b-743b7c5758ec/grubconfig.git$ sudo grub-install --boot-directory=/media/werner/e3e084db-7f7f-47cb-866b-743b7c5758ec/grubconfig.git/boot/ /dev/sda
+
+

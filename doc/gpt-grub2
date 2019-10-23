@@ -1,0 +1,34 @@
+https://wiki.archlinux.org/index.php/GRUB_(%E6%AD%A3%E9%AB%94%E4%B8%AD%E6%96%87)
+
+
+
+Preliminary Requirements for GRUB2
+BIOS 系統
+GPT specific instructions
+
+GRUB2 in BIOS-GPT configuration requires a BIOS Boot Partition to embed its core.img in the absence of post-MBR gap in GPT partitioned systems (which is taken over by the GPT Primary Header and Primary Partition table). This partition is used by GRUB2 only in BIOS-GPT setups. No such partition type exists in case of MBR partitioning (at least not for GRUB2). This partition is also not required if the system is UEFI based, as no embedding of bootsectors takes place in that case. Syslinux does not require this partition.
+
+For a BIOS-GPT configuration, create a 2 MiB partition using cgdisk or GNU Parted with no filesystem. The location of the partition in the partition table does not matter but it should be within the first 2 TiB region of the disk. It is advisable to put it somewhere in the beginning of the disk before the /boot partition. Set the partition type to "EF02" in cgdisk or set <BOOT_PART_NUM> bios_grub on in GNU Parted.
+Note: This partition should be created before grub-install or grub-setup is run or before the Install Bootloader step of the Archlinux installer (if GRUB2 BIOS is selected as bootloader).
+
+
+
+http://www.gnu.org/software/grub/manual/grub/html_node/BIOS-installation.html#BIOS-installation
+
+
+
+GPT
+
+Some newer systems use the GUID Partition Table (GPT) format. This was specified as part of the Extensible Firmware Interface (EFI), but it can also be used on BIOS platforms if system software supports it; for example, GRUB and GNU/Linux can be used in this configuration. With this format, it is possible to reserve a whole partition for GRUB, called the BIOS Boot Partition. GRUB can then be embedded into that partition without the risk of being overwritten by other software and without being contained in a filesystem which might move its blocks around.
+
+When creating a BIOS Boot Partition on a GPT system, you should make sure that it is at least 31 KiB in size. (GPT-formatted disks are not usually particularly small, so we recommend that you make it larger than the bare minimum, such as 1 MiB, to allow plenty of room for growth.) You must also make sure that it has the proper partition type. Using GNU Parted, you can set this using a command such as the following:
+
+# parted /dev/disk set partition-number bios_grub on
+
+If you are using gdisk, set the partition type to ‘0xEF02’. With partitioning programs that require setting the GUID directly, it should be ‘21686148-6449-6e6f-744e656564454649’.
+
+Caution: Be very careful which partition you select! When GRUB finds a BIOS Boot Partition during installation, it will automatically overwrite part of it. Make sure that the partition does not contain any other data. 
+
+
+
+
