@@ -1,0 +1,83 @@
+1-
+
+首先用 ddrescue 、dd ， partclone.dd
+ 等工具将该盘分区表清空。
+
+比如：
+
+下面的这个可以保证足够吧 前两个分区清零：
+
+$ sudo dd if=/dev/zero of=/dev/sdc bs=1M count=1000
+
+
+然后，使用 gparted，gdisk等工具，建立如下的分区结构：
+
+
+werner@debian-01:~$ sudo gdisk -l /dev/sdc
+GPT fdisk (gdisk) version 1.0.3
+
+Partition table scan:
+  MBR: protective
+  BSD: not present
+  APM: not present
+  GPT: present
+
+Found valid GPT with protective MBR; using GPT.
+Disk /dev/sdc: 60063744 sectors, 28.6 GiB
+Model: Ultra USB 3.0   
+Sector size (logical/physical): 512/512 bytes
+Disk identifier (GUID): F665095B-CB40-476B-876B-27C48DAC61F1
+Partition table holds up to 128 entries
+Main partition table begins at sector 2 and ends at sector 33
+First usable sector is 34, last usable sector is 60063710
+Partitions will be aligned on 2048-sector boundaries
+Total free space is 39374781 sectors (18.8 GiB)
+
+Number  Start (sector)    End (sector)  Size       Code  Name
+   1            2048            6143   2.0 MiB     EF02  
+   2            6144          210943   100.0 MiB   EF00  
+   3          210944        20690943   9.8 GiB     8300 
+
+
+2- 安装方法：
+
+werner@debian-01:~$ sudo mount /dev/sdc2 /mnt/sdc2
+werner@debian-01:~$ sudo mount /dev/sdc3 /mnt/sdc3
+
+sudo apt-get install grub-pc-bin grub-efi-ia32-bin grub-efi-amd64-bin
+
+其中： --efi-directory 必须预先存在，而 --boot-directory 可以在安装时自动创建。
+
+另外发现：
+
+下面的可以：
+--boot-directory=/mnt/sdc3/grubconfig.git/boot/ --efi-directory=/mnt/sdc2/grubconfig.git 
+
+下面的不行（将导致efi方法无法启动）：
+
+--boot-directory=/mnt/sdc3/grubconfig.git/boot/ --efi-directory=/mnt/sdc2/
+
+所以，如下操作：
+
+/mnt/sdc2$ sudo mkdir grubconfig.git
+
+sudo grub-install --recheck --boot-directory=/mnt/sdc3/grubconfig.git/boot --target=i386-pc /dev/sdc
+sudo grub-install --removable --recheck --boot-directory=/mnt/sdc3/grubconfig.git/boot/ --efi-directory=/mnt/sdc2/grubconfig.git/ --target=x86_64-efi /dev/sdc
+sudo grub-install --removable --recheck --boot-directory=/mnt/sdc3/grubconfig.git/boot/ --efi-directory=/mnt/sdc2/grubconfig.git/ --target=i386-efi /dev/sdc
+
+
+3- 不使用 --hint，便于在多硬盘环境中使用 ： 
+
+修改：
+werner@debian-01:/mnt/sdc2/grubconfig.git/EFI/BOOT$ cat grub.cfg 
+search.fs_uuid E8E5-8F68 root hd2,gpt2 
+set prefix=($root)'/grubconfig.git/boot/grub'
+configfile $prefix/grub.cfg
+
+
+如下：
+#search.fs_uuid E8E5-8F68 root hd2,gpt2 
+search.fs_uuid E8E5-8F68 root 
+set prefix=($root)'/grubconfig.git/boot/grub'
+configfile $prefix/grub.cfg
+
