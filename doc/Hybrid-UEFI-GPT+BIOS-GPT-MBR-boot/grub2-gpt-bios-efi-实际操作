@@ -80,6 +80,16 @@ sudo grub-install --recheck --boot-directory=/mnt/sda3/grubconfig.git/boot --tar
 sudo grub-install --removable --recheck --boot-directory=/mnt/sda3/grubconfig.git/boot/ --efi-directory=/mnt/sda2/grubconfig.git/ --target=x86_64-efi /dev/sda
 sudo grub-install --removable --recheck --boot-directory=/mnt/sda3/grubconfig.git/boot/ --efi-directory=/mnt/sda2/grubconfig.git/ --target=i386-efi /dev/sda
 
+但是，在安装到硬盘的情况下，efi的启动项并没有出现。或许我上面的方法有问题。
+
+
+进一步可以看的文档：
+
+https://wiki.debian.org/GrubEFIReinstall
+https://askubuntu.com/questions/831216/how-can-i-reinstall-grub-to-the-efi-partition
+https://linuxsuperuser.com/reinstall-grub2-efi-bootloader-ubuntu/
+
+
 
 3- 不使用 --hint，便于在多硬盘环境中使用 ： 
 
