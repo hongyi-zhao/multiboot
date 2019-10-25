@@ -65,6 +65,21 @@ sudo grub-install --recheck --boot-directory=/mnt/sdc3/grubconfig.git/boot --tar
 sudo grub-install --removable --recheck --boot-directory=/mnt/sdc3/grubconfig.git/boot/ --efi-directory=/mnt/sdc2/grubconfig.git/ --target=x86_64-efi /dev/sdc
 sudo grub-install --removable --recheck --boot-directory=/mnt/sdc3/grubconfig.git/boot/ --efi-directory=/mnt/sdc2/grubconfig.git/ --target=i386-efi /dev/sdc
 
+在硬盘上安装同样使用上面的命令，如果不使用 --removable，则遇到下面的提示： 
+
+werner@debian-01:/mnt/sda2/grubconfig.git$ sudo grub-install --recheck --boot-directory=/mnt/sda3/grubconfig.git/boot/ --efi-directory=/mnt/sda2/grubconfig.git/ --target=x86_64-efi /dev/sda
+Installing for x86_64-efi platform.
+grub-install: warning: EFI variables are not supported on this system..
+Installation finished. No error reported.
+
+
+所以，如下使用：
+
+sudo grub-install --recheck --boot-directory=/mnt/sda3/grubconfig.git/boot --target=i386-pc /dev/sda
+
+sudo grub-install --removable --recheck --boot-directory=/mnt/sda3/grubconfig.git/boot/ --efi-directory=/mnt/sda2/grubconfig.git/ --target=x86_64-efi /dev/sda
+sudo grub-install --removable --recheck --boot-directory=/mnt/sda3/grubconfig.git/boot/ --efi-directory=/mnt/sda2/grubconfig.git/ --target=i386-efi /dev/sda
+
 
 3- 不使用 --hint，便于在多硬盘环境中使用 ： 
 
