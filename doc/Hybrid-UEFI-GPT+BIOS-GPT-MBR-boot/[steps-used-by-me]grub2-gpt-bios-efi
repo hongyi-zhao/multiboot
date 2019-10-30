@@ -48,39 +48,42 @@ sudo apt-get install grub-pc-bin grub-efi-ia32-bin grub-efi-amd64-bin
 
 其中： --efi-directory 必须预先存在，而 --boot-directory 可以在安装时自动创建。
 
-另外发现：
 
-下面的可以：
---boot-directory=/mnt/sdc3/grubconfig.git/boot/ --efi-directory=/mnt/sdc2/grubconfig.git 
+首先要从bios中设定 efi的启动方法，然后，用 SYSRCD603 或任何支持 efi启动的live usb启动到grub2，
+在 grub2 中使用 命令 
+set root=hd1,3
+prefix=($root)/grubconfig.git/boot/grub 
+configfile $prefix/grub.cfg
 
-下面的不行（将导致efi方法无法启动）：
+的 方法进入 Debian 系统。 
 
---boot-directory=/mnt/sdc3/grubconfig.git/boot/ --efi-directory=/mnt/sdc2/
+然后安装到硬盘如下：
 
-所以，如下操作：
-
-/mnt/sdc2$ sudo mkdir grubconfig.git
-
-sudo grub-install --recheck --boot-directory=/mnt/sdc3/grubconfig.git/boot --target=i386-pc /dev/sdc
-sudo grub-install --removable --recheck --boot-directory=/mnt/sdc3/grubconfig.git/boot/ --efi-directory=/mnt/sdc2/grubconfig.git/ --target=x86_64-efi /dev/sdc
-sudo grub-install --removable --recheck --boot-directory=/mnt/sdc3/grubconfig.git/boot/ --efi-directory=/mnt/sdc2/grubconfig.git/ --target=i386-efi /dev/sdc
-
-在硬盘上安装同样使用上面的命令，如果不使用 --removable，则遇到下面的提示： 
-
-werner@debian-01:/mnt/sda2/grubconfig.git$ sudo grub-install --recheck --boot-directory=/mnt/sda3/grubconfig.git/boot/ --efi-directory=/mnt/sda2/grubconfig.git/ --target=x86_64-efi /dev/sda
+werner@debian-01:/media/werner/e3e084db-7f7f-47cb-866b-743b7c5758ec/grubconfig.git$ sudo grub-install --efi-directory=/mnt/sda2 --boot-directory=/media/werner/e3e084db-7f7f-47cb-866b-743b7c5758ec/grubconfig.git/boot/
 Installing for x86_64-efi platform.
-grub-install: warning: EFI variables are not supported on this system..
 Installation finished. No error reported.
 
 
-所以，如下使用：
+efi 启动项查看，删除等：
 
-sudo grub-install --recheck --boot-directory=/mnt/sda3/grubconfig.git/boot --target=i386-pc /dev/sda
+/media/werner/e3e084db-7f7f-47cb-866b-743b7c5758ec/grubconfig.git/doc/Hybrid-UEFI-GPT+BIOS-GPT-MBR-boot/how-do-i-remove-ubuntu-in-the-bios-boot-menu-uefi
 
-sudo grub-install --removable --recheck --boot-directory=/mnt/sda3/grubconfig.git/boot/ --efi-directory=/mnt/sda2/grubconfig.git/ --target=x86_64-efi /dev/sda
-sudo grub-install --removable --recheck --boot-directory=/mnt/sda3/grubconfig.git/boot/ --efi-directory=/mnt/sda2/grubconfig.git/ --target=i386-efi /dev/sda
+$ sudo efibootmgr 
+BootCurrent: 0008
+Timeout: 1 seconds
+BootOrder: 0000,0009,0007,0008,0003
+Boot0000* debian
+Boot0003  UEFI: Built-in EFI Shell 
+Boot0007* USB KEY
+Boot0008* UEFI: SanDisk
+Boot0009* Hard Drive 
 
-但是，在安装到硬盘的情况下，efi的启动项并没有出现。或许我上面的方法有问题。
+
+安装到usb则采用：
+
+werner@debian-01:/media/werner/a0e7dcd3-e295-4c51-bdd4-5119475d3898/grubconfig.git$ sudo grub-install --efi-directory=/mnt/sdc2/ --boot-directory=/media/werner/a0e7dcd3-e295-4c51-bdd4-5119475d3898/grubconfig.git/boot/ --removable --recheck 
+Installing for x86_64-efi platform.
+Installation finished. No error reported.
 
 
 进一步可以看的文档：
