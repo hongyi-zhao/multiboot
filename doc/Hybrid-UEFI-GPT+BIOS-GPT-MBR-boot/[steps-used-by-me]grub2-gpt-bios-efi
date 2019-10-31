@@ -42,6 +42,28 @@ Number  Start (sector)    End (sector)  Size       Code  Name
 2- 安装方法：
 
 
+a-
+
+首先要从bios中设定 efi的启动方法，然后，用 SYSRCD603 或任何支持 efi启动的live usb启动到grub2，
+在 grub2 中使用 命令 
+set root=hd1,3
+prefix=($root)/grubconfig.git/boot/grub 
+configfile $prefix/grub.cfg
+
+的 方法进入 Debian 系统。 
+
+
+下面的目录存在，则表面是efi方式启动：
+
+ls /sys/firmware/efi/
+
+
+b- 使用自己编译的grub的最新稳定版本。
+
+ref：
+/media/werner/e3e084db-7f7f-47cb-866b-743b7c5758ec1/sysadmin/grub/grub.git.sh
+
+
 grub-install ... -v  观察其调用细节，发现是基于  grub-mkimage / efibootmgr工作的。
 
 
@@ -55,7 +77,7 @@ https://www.ibm.com/developerworks/community/blogs/5144904d-5d75-45ed-9d2b-cf175
 
  需要注意如下几点：
 
-1) 模块是按照一定顺序排列的。如果打破默认序列，EFI文件不可用。
+1) 模块是按照一定顺序排列的。如果打破默认序列，EFI文件不可用。  （但是，我下面的方法用了所有的模块，也可以启动，没有按照特定的顺序。）
 
 2) fat必须被添加到EFI文件中，用以从FAT文件系统中寻找后续启动文件。
 
