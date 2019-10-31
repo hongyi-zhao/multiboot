@@ -86,7 +86,7 @@ https://www.ibm.com/developerworks/community/blogs/5144904d-5d75-45ed-9d2b-cf175
 https://stackoverflow.com/questions/35269943/how-does-the-grub2-uefi-loader-know-where-to-look-for-the-configuration-file-or
 
 首先准备如下文件：
-grub-config.cfg 
+grub-mkimage.cfg 
 
 #/dev/sda2                          vfat                       /mnt/sda2                              EF4B-3153
 search.fs_uuid EF4B-3153 root
@@ -94,7 +94,7 @@ search.fs_uuid EF4B-3153 root
 set prefix=($root)'/EFI/uefi-hd'
 configfile $prefix/grub.cfg
 
-sudo grub-mkimage -c grub-config.cfg -o grubx64.efi -O x86_64-efi -p ''  $( ls -1 /usr/lib/grub/x86_64-efi/*mod | sed 's/\.mod//;s/.*\///' | xargs )
+sudo grub-mkimage -c grub-mkimage.cfg -o grubx64.efi -O x86_64-efi -p ''  $( ls -1 /usr/local/lib/grub/x86_64-efi/*.mod | sed 's/\.mod//;s/.*\///' | xargs )
 
 
 
@@ -105,8 +105,8 @@ https://wiki.archlinux.org/index.php/GRUB/Tips_and_tricks_(%E7%AE%80%E4%BD%93%E4
 https://wiki.archlinux.org/index.php/Unified_Extensible_Firmware_Interface_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#efibootmgr
 
 
-echo 'configfile ${cmdpath}/grub.cfg' > /tmp/grub.cfg
-sudo grub-mkstandalone -O x86_64-efi -o grubx64_standalone.efi "boot/grub/grub.cfg=/tmp/grub.cfg"
+echo 'configfile ${cmdpath}/grub.cfg' > /tmp/grub-mkstandalone.cfg
+sudo grub-mkstandalone -O x86_64-efi -o grub-mkstandalone-x86_64.efi "boot/grub/grub.cfg=/tmp/grub.cfg"
 
 sudo efibootmgr --create --disk /dev/sda --part 2 --loader /mnt/sda2/EFI/uefi-hd/grubx64_standalone.efi --label "grubx64_standalone"
 
