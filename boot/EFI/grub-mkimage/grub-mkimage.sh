@@ -9,3 +9,5 @@ configfile $prefix/grub.cfg
 
 sudo grub-mkimage -c grub-mkimage.cfg -o grub-mkimage-x86_64.efi  -O x86_64-efi -p ''  $( ls -1 /usr/local/lib/grub/x86_64-efi/*.mod | sed 's/\.mod//;s/.*\///' | xargs )
 
+加载那些模块就足够了呢？
+sudo grub-mkimage -c grub-mkimage/grub-mkimage.cfg -o grub-mkimage-x86_64.efi  -O x86_64-efi -p '' fat part_msdos part_gpt ext2 regexp search_fs_uuid search configfile
