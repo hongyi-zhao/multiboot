@@ -85,6 +85,65 @@ https://www.ibm.com/developerworks/community/blogs/5144904d-5d75-45ed-9d2b-cf175
 
 https://stackoverflow.com/questions/35269943/how-does-the-grub2-uefi-loader-know-where-to-look-for-the-configuration-file-or
 
+How does the GRUB2 UEFI loader know where to look for the configuration file (or where the 2nd stage's files are located)?
+
+此文讲的非常好。
+
+=============
+
+
+There are actual several ways this can happen:
+
+    Load an embedded config file.
+    Load a config file in the same directory as the GRUB binary.
+    Load a config file from a path decided at grub-mkimage (called by grub-install) execution time.
+
+The latter is probably the functionality you are really asking for - and it's a combination of the default config file name (grub.cfg), the prefix (default /boot/grub, but can be explicitly specified to grub-mkimage) and the grub partition name for the partition where the prefix is located.
+
+If I run strings /boot/efi/EFI/debian/grubx64.efi | tail -1 on my current workstation, it prints out the stored value: (,gpt2)/boot/grub, telling grubx64.efi to look for its configuration file in /boot/grub on GPT partition 2. The bit before the comma (the GRUB disk device name) gets filled in at runtime based on which disk the grubx64.efi image itself was loaded from.
+
+Dynamically loaded modules will also be searched for under this location, but in an architecture/platform-specific directory - in this case /boot/grub/x86_64-efi.
+
+
+
+
+for EFI image, I found that grub-install or grub-mkimage will always embed an early config into the result EFI binary, regardless of whether or not you have specified the --config FILE option. If you do not specify the --config FILE option, it will try to embed /boot/grub/x86-64_efi/load.cfg, This early config file looks like this:
+
+    search.fs_uuid 8ef704aa-041d-443c-8ce6-71ac7e7f30da root hd0,gpt1
+    set prefix=($root)'/boot/grub'
+    configfile $prefix/grub.cfg  # this line seems can be omitted, because it seems to be the default next action
+
+    The uuid means uuid of file system, not of partition, you can use blkid to list it.
+    The hd0,gpt1 is just a hint.
+    You can change the first line into set root=hd0,gpt1
+
+This default behavior of auto embedding is different as in BIOS mode, the latter by default only embed a prefix string like (,gpt3)/boot without bothering search.uuid.
+
+I also found that Ubuntu bionic EFI image embedded a early config like this https://source.puri.sm/pureos/core/grub2/blob/master/debian/build-efi-images#L64
+
+if [ -z "\$prefix" -o ! -e "\$prefix" ]; then
+    if ! search --file --set=root /.disk/info; then
+        search --file --set=root /.disk/mini-info
+    fi
+    set prefix=(\$root)/boot/grub
+fi
+if [ -e \$prefix/$platform/grub.cfg ]; then
+    source \$prefix/$platform/grub.cfg
+elif [ -e \$prefix/grub.cfg ]; then
+    source \$prefix/grub.cfg
+else
+    source \$cmdpath/grub.cfg
+fi
+
+The cmdpath is the DIR of efi binary, so it will fallback to the grub.cfg in the same dir of the efi binary, as you found.
+
+
+==============
+
+
+/media/werner/e3e084db-7f7f-47cb-866b-743b7c5758ec1/grubconfig.git/boot/EFI/grub.cfg
+
+
 首先准备如下文件：
 grub-mkimage.cfg 
 
@@ -94,7 +153,9 @@ search.fs_uuid EF4B-3153 root
 set prefix=($root)'/EFI/uefi-hd'
 configfile $prefix/grub.cfg
 
-sudo grub-mkimage -c grub-mkimage.cfg -o grubx64.efi -O x86_64-efi -p ''  $( ls -1 /usr/local/lib/grub/x86_64-efi/*.mod | sed 's/\.mod//;s/.*\///' | xargs )
+按照观察到的 grub-install 调用 grub-mkimage的 方法，使用下面的即可：
+
+sudo grub-mkimage -c grub-mkimage.cfg -o grubx64.efi -O x86_64-efi -p ''  fat part_msdos 'ext2' 'part_gpt' 'search_fs_uuid'
 
 
 
@@ -102,13 +163,12 @@ sudo grub-mkimage -c grub-mkimage.cfg -o grubx64.efi -O x86_64-efi -p ''  $( ls 
 
 ref：
 https://wiki.archlinux.org/index.php/GRUB/Tips_and_tricks_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
-https://wiki.archlinux.org/index.php/Unified_Extensible_Firmware_Interface_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#efibootmgr
 
 
 echo 'configfile ${cmdpath}/grub.cfg' > /tmp/grub-mkstandalone.cfg
 sudo grub-mkstandalone -O x86_64-efi -o grub-mkstandalone-x86_64.efi "boot/grub/grub.cfg=/tmp/grub.cfg"
 
-sudo efibootmgr --create --disk /dev/sda --part 2 --loader /mnt/sda2/EFI/uefi-hd/grubx64_standalone.efi --label "grubx64_standalone"
+sudo efibootmgr --create --disk /dev/sda --part 2 --loader /EFI/uefi-hd/grubx64_standalone.efi --label "grubx64_standalone"
 
 
 独立的 GRUB EFI 文件和这个 grub.cfg 可以存放在 EFI 系统分区中的任何一个目录里，只有它们处在同一个目录中就可以。这样它们就变得可移植了。 
@@ -116,11 +176,44 @@ sudo efibootmgr --create --disk /dev/sda --part 2 --loader /mnt/sda2/EFI/uefi-hd
 然后，将 grubx64_standalone.efi 和 下面的 grub.cfg 放到一个目录即可：
 
 
-werner@kubuntu:~$ cat /mnt/sda2/EFI/uefi-hd/grub.cfg 
-search.fs_uuid f2ce6fb0-6dee-4979-b792-9df0bd728eed root hd0,gpt3 
-set prefix=($root)'/grubconfig.git/boot/grub'
-configfile $prefix/grub.cfg
-werner@kubuntu:~$ 
+
+
+efibootmgr 使用说明（manpage 所述不详，不如这里。arch的wiki确实有水平。）：
+----------------------
+https://wiki.archlinux.org/index.php/Unified_Extensible_Firmware_Interface_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#efibootmgr
+
+要通过 efibootmgr 添加新的启动参数，需要确认：
+
+    包含 ESP 的磁盘编号: /dev/sdX
+    ESP 在第几个分区 /dev/sdXY 中的 Y
+    UEFI 程序相对 ESP 根目录的路径
+
+假设要启动的引导器文件是 /boot/efi/EFI/refind/refind_x64.efi,/boot/efi 是 ESP 的挂载目录
+
+$ findmnt /boot/efi
+
+TARGET SOURCE  FSTYPE OPTIONS
+/boot/efi /dev/sda1  vfat   rw,flush,tz=UTC
+
+上面结果说明 ESP 位于 /dev/sda，分区编号是 1. UEFI 程序相对于 ESP 根的路径是/EFI/refind/refind_x64.efi. 应该用下面 efibootmgr 语句创建:
+
+# efibootmgr --create --disk /dev/sda --part 1 --loader /EFI/refind/refind_x64.efi --label "rEFInd Boot Manager"
+
+实际测试表明，下面的写法都是有效的：
+
+
+/EFI/mygrub/grubx64.efi
+EFI/mygrub/grubx64.efi
+\EFI\mygrub\grubx64.efi
+EFI\mygrub\grubx64.efi
+
+
+
+
+参考efibootmgr(8) 或 efibootmgr README。
+注意: UEFI 使用反斜杠 \ 作为路径分隔符 (类似于 Windows 路径)，Efibootmgr 解析路径之前内部会把 / 转换为 \.
+----------------------
+
 
 
 
