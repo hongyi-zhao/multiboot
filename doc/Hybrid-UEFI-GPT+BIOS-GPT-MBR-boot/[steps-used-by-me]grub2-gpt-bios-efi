@@ -41,71 +41,86 @@ Number  Start (sector)    End (sector)  Size       Code  Name
 
 2- 安装方法：
 
-werner@debian-01:~$ sudo mount /dev/sdc2 /mnt/sdc2
-werner@debian-01:~$ sudo mount /dev/sdc3 /mnt/sdc3
 
-sudo apt-get install grub-pc-bin grub-efi-ia32-bin grub-efi-amd64-bin
-
-其中： --efi-directory 必须预先存在，而 --boot-directory 可以在安装时自动创建。
+grub-install ... -v  观察其调用细节，发现是基于  grub-mkimage / efibootmgr工作的。
 
 
-首先要从bios中设定 efi的启动方法，然后，用 SYSRCD603 或任何支持 efi启动的live usb启动到grub2，
-在 grub2 中使用 命令 
-set root=hd1,3
-prefix=($root)/grubconfig.git/boot/grub 
+
+
+
+基于 grub-mkimage 的方法:
+
+ref：
+https://www.ibm.com/developerworks/community/blogs/5144904d-5d75-45ed-9d2b-cf1754ee936a/entry/uefi-grub2?lang=en
+
+ 需要注意如下几点：
+
+1) 模块是按照一定顺序排列的。如果打破默认序列，EFI文件不可用。
+
+2) fat必须被添加到EFI文件中，用以从FAT文件系统中寻找后续启动文件。
+
+3) grub2-mkstandalone是grub2-mkimage功能的延伸，可以增加任何文件，甚至文件夹到EFI文件中，具体细节可参考grub2-mkstandalone -h。
+
+https://stackoverflow.com/questions/35269943/how-does-the-grub2-uefi-loader-know-where-to-look-for-the-configuration-file-or
+
+首先准备如下文件：
+grub-config.cfg 
+
+#/dev/sda2                          vfat                       /mnt/sda2                              EF4B-3153
+search.fs_uuid EF4B-3153 root
+# 根据情况修改：
+set prefix=($root)'/EFI/uefi-hd'
 configfile $prefix/grub.cfg
 
-的 方法进入 Debian 系统。 
-
-然后安装到硬盘如下：
-
-werner@debian-01:/media/werner/e3e084db-7f7f-47cb-866b-743b7c5758ec/grubconfig.git$ sudo grub-install --efi-directory=/mnt/sda2 --boot-directory=/media/werner/e3e084db-7f7f-47cb-866b-743b7c5758ec/grubconfig.git/boot/
-Installing for x86_64-efi platform.
-Installation finished. No error reported.
-
-
-efi 启动项查看，删除等：
-
-/media/werner/e3e084db-7f7f-47cb-866b-743b7c5758ec/grubconfig.git/doc/Hybrid-UEFI-GPT+BIOS-GPT-MBR-boot/how-do-i-remove-ubuntu-in-the-bios-boot-menu-uefi
-
-$ sudo efibootmgr 
-BootCurrent: 0008
-Timeout: 1 seconds
-BootOrder: 0000,0009,0007,0008,0003
-Boot0000* debian
-Boot0003  UEFI: Built-in EFI Shell 
-Boot0007* USB KEY
-Boot0008* UEFI: SanDisk
-Boot0009* Hard Drive 
-
-
-安装到usb则采用：
-
-werner@debian-01:/media/werner/a0e7dcd3-e295-4c51-bdd4-5119475d3898/grubconfig.git$ sudo grub-install --efi-directory=/mnt/sdc2/ --boot-directory=/media/werner/a0e7dcd3-e295-4c51-bdd4-5119475d3898/grubconfig.git/boot/ --removable --recheck 
-Installing for x86_64-efi platform.
-Installation finished. No error reported.
-
-
-进一步可以看的文档：
-
-https://wiki.debian.org/GrubEFIReinstall
-https://askubuntu.com/questions/831216/how-can-i-reinstall-grub-to-the-efi-partition
-https://linuxsuperuser.com/reinstall-grub2-efi-bootloader-ubuntu/
+sudo grub-mkimage -c grub-config.cfg -o grubx64.efi -O x86_64-efi -p ''  $( ls -1 /usr/lib/grub/x86_64-efi/*mod | sed 's/\.mod//;s/.*\///' | xargs )
 
 
 
-3- 不使用 --hint，便于在多硬盘环境中使用 ： 
+基于 grub-mkstandalone 的独立的 GRUB (可移植的方法)：
 
-修改：
-werner@debian-01:/mnt/sdc2/grubconfig.git/EFI/BOOT$ cat grub.cfg 
-search.fs_uuid E8E5-8F68 root hd2,gpt2 
+ref：
+https://wiki.archlinux.org/index.php/GRUB/Tips_and_tricks_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
+https://wiki.archlinux.org/index.php/Unified_Extensible_Firmware_Interface_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#efibootmgr
+
+
+echo 'configfile ${cmdpath}/grub.cfg' > /tmp/grub.cfg
+sudo grub-mkstandalone -O x86_64-efi -o grubx64_standalone.efi "boot/grub/grub.cfg=/tmp/grub.cfg"
+
+sudo efibootmgr --create --disk /dev/sda --part 2 --loader /mnt/sda2/EFI/uefi-hd/grubx64_standalone.efi --label "grubx64_standalone"
+
+
+独立的 GRUB EFI 文件和这个 grub.cfg 可以存放在 EFI 系统分区中的任何一个目录里，只有它们处在同一个目录中就可以。这样它们就变得可移植了。 
+
+然后，将 grubx64_standalone.efi 和 下面的 grub.cfg 放到一个目录即可：
+
+
+werner@kubuntu:~$ cat /mnt/sda2/EFI/uefi-hd/grub.cfg 
+search.fs_uuid f2ce6fb0-6dee-4979-b792-9df0bd728eed root hd0,gpt3 
 set prefix=($root)'/grubconfig.git/boot/grub'
 configfile $prefix/grub.cfg
+werner@kubuntu:~$ 
 
 
-如下：
-#search.fs_uuid E8E5-8F68 root hd2,gpt2 
-search.fs_uuid E8E5-8F68 root 
-set prefix=($root)'/grubconfig.git/boot/grub'
-configfile $prefix/grub.cfg
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
