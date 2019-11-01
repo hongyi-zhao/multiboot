@@ -1,0 +1,6 @@
+/boot/efi/**/*.efi
+/sysadmin
+!/sysadmin/**/grub.git.sh
+/boot/grub
+!/boot/grub/grub.cfg
+!/boot/grub/custom.cfg
