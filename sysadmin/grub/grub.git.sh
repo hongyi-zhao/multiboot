@@ -40,6 +40,31 @@ grub-2.04
 
 make -j24
 
+安装完成后，如果后续不直接使用 grub-install ，而是使用 grub-mkimage/grub-mkstandalone 来进行工作，那么需要下面的操作：
+
+cd grubconfig.git/boot/grub
+cp -r /usr/local/lib/grub/* 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
