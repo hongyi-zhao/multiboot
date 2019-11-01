@@ -1,3 +1,4 @@
+这个方法不具有可移植性，不再使用。
 
  
 sudo grub-mkimage -p '(,gpt3)/grubconfig.git/boot/grub' -o grub-mkimage-x86_64.efi -O 'x86_64-efi' ext2 part_gpt
