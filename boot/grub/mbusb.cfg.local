@@ -12,17 +12,14 @@
 
 for dev in (*); do
 
-         unset cl_name
- 
          probe --set fs --fs $dev
          if [ x"$fs" = x"iso9660"  ]; then
            probe --set cd_label --label $dev
-           
-           # Skip duplicate ISOs
-           if regexp "$cd_label" "$cd_label_tot"; then continue; fi
- 
-         fi
+         fi  
          
+         # Skip duplicate ISOs
+         if regexp "$cd_label" "$cd_label_tot"; then continue; fi
+             
          cd_label_tot="$cd_label_tot $cd_lable"
          
            for efi in $dev/EFI/*/grubx64.efi; do
