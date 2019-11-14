@@ -10,23 +10,24 @@
         
     insmod chain
 
-for file in (*)/EFI/*/*; do
+for rootdev in (*); do
       
        
-        if regexp -s 1:rootdev -s 2:efi '^(\(.*\)).*/(GRUBX|grubx|BOOTX|bootx)64$' "$file"; then 
+        #if regexp -s 1:rootdev -s 2:efi '^(\(.*\)).*/(GRUBX|grubx|BOOTX|bootx)64$' "$file"; then 
          
          probe --set fs --fs $rootdev
          if [ x"$fs" != x"iso9660"  ]; then continue; fi
 
          probe --set cd_label --label $rootdev
-           
+         
+         for file in $rootdev/EFI/*/*64.efi; do  
          
          # Skip duplicate ISOs
          #if regexp "$cd_label" "$cd_label_tot"; then continue; fi
              
          #cd_label_tot="$cd_label_tot $cd_lable"
 
-             if regexp '(GRUBX|grubx)' $efi ; then
+             if regexp '(GRUBX|grubx)64.efi$' $file ; then
                cl_name=$file
           
                menuentry "$cd_label on $rootdev (grubx64.efi/ddrescue/partclone.dd) ->" "$rootdev" "$cl_name" {
@@ -35,7 +36,7 @@ for file in (*)/EFI/*/*; do
                 chainloader $cl_name
               }
               
-              elif regexp '(BOOTX|bootx)' $efi ; then
+              elif regexp '(BOOTX|bootx)64.efi$' $file ; then
                 
                   cl_name=$file
          
@@ -46,8 +47,7 @@ for file in (*)/EFI/*/*; do
                  }              
               fi
 
-
-       fi
+        done   
 
          
 done
