@@ -1,0 +1,58 @@
+
+    insmod part_msdos
+    insmod ntfs
+	
+    insmod part_gpt
+    insmod ext2
+    insmod iso9660
+    insmod regexp
+    insmod loopback
+        
+    insmod chain
+
+unset cd_label_tot
+
+for i in (*)/EFI/* (*)/efi/*; do
+       
+        regexp -s rootdev '^(\(.*\))' "$i"
+
+        probe --set fs --fs "$rootdev"
+        if [ x$fs = xiso9660 ] -o [ x$fs = xntfs ]; then
+         
+  
+         for j in $i/*64.*; do
+        
+           
+
+
+         fi 
+
+
+           
+  
+        # 去重处理：
+        probe --set cd_label --label "$rootdev"
+        if regexp "$cd_label" "$cd_label_tot"; then continue; fi 
+        cd_label_tot="${cd_label_tot}${cd_label}"       
+              
+        for file in $rootdev$filepath/*
+        if regexp -s grubx '((GRUBX|grubx)64[.](efi|EFI))$' "$rootdev$filepath"; then
+          
+        elif regexp -s bootx '((BOOTX|bootx)64[.](efi|EFI))$' "$rootdev$filepath"; then 
+          
+        fi
+           
+      
+            
+            cl_name=$filename
+          
+               menuentry "$cd_label on $rootdev (${efi_name}64.${efi_ext}/ddrescue/partclone.dd) ->" "$rootdev" "$cl_name" {
+                root=$2
+                cl_name=$3
+                chainloader $cl_name
+              }  
+
+                  
+         
+done
+
