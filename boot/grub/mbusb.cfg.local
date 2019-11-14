@@ -13,11 +13,18 @@
 for dev in (*); do
 
          unset cl_name
-
+ 
          probe --set fs --fs $dev
          if [ x"$fs" = x"iso9660"  ]; then
            probe --set cd_label --label $dev
            
+           # Skip duplicate ISOs
+           if regexp "$cd_label" "$cd_label_tot"; then continue; fi
+ 
+         fi
+         
+         cd_label_tot="$cd_label_tot $cd_lable"
+         
            for efi in $dev/EFI/*/grubx64.efi; do
              if [ -e $efi ]; then
              cl_name=$efi
@@ -29,6 +36,7 @@ for dev in (*); do
               }
               fi
             done
+            
             for efi in $dev/EFI/*/bootx64.efi; do
                if [ -e $efi ]; then
                  cl_name=$efi
@@ -39,8 +47,8 @@ for dev in (*); do
                    chainloader $cl_name
                  }         
                fi
-           done
-     fi
+            done
+
          
 done
 
