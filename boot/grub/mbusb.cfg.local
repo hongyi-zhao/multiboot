@@ -23,28 +23,27 @@ for dev in (*); do
              
          cd_label_tot="$cd_label_tot $cd_lable"
          
-           for efi in $dev/EFI/*/grubx64.efi; do
-             if [ -e $efi ]; then
-             cl_name=$efi
-         
-              menuentry "$cd_label on $dev (grubx64.efi/ddrescue/partclone.dd) ->" "$dev" "$cl_name" {
+           for efi in $dev/EFI/*/*; do
+             if regexp '/(GRUBX|grubx)64$' $efi ; then
+               cl_name=$efi
+          
+               menuentry "$cd_label on $dev (grubx64.efi/ddrescue/partclone.dd) ->" "$dev" "$cl_name" {
                 root=$2
                 cl_name=$3
                 chainloader $cl_name
               }
-              fi
-            done
-            
-            for efi in $dev/EFI/*/bootx64.efi; do
-               if [ -e $efi ]; then
-                 cl_name=$efi
+              
+              elif regexp '/(BOOTX|bootx)64$' $efi ; then
+                
+                  cl_name=$efi
          
                  menuentry "$cd_label on $dev (bootx64.efi/ddrescue/partclone.dd) ->" "$dev" "$cl_name" {
                    root=$2
                    cl_name=$3
                    chainloader $cl_name
-                 }         
-               fi
+                 }              
+              fi
+
             done
 
          
