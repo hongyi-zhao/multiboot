@@ -10,47 +10,24 @@
         
     insmod chain
 
-for file in (*)/EFI/*/*64.efi; do
-      
-       
-        if regexp -s 1:rootdev -s 2:efi_file -s 3:efi_type '^(\(.*\))(/.*/(GRUBX|grubx|BOOTX|bootx)64)$' "$file"; then 
-         
-         probe --set fs --fs $rootdev
-         if [ x"$fs" != x"iso9660"  ]; then continue; fi
-
-         probe --set cd_label --label $rootdev
-         
-#         for file in $rootdev/EFI/*/*64.efi; do  
-         
-         # Skip duplicate ISOs
-         if regexp "$cd_label" "$cd_label_tot"; then continue; fi
-             
-         cd_label_tot="$cd_label_tot $cd_lable"
-             
-             # 凡是用 regexp的地方，最好变量加双引号，以防其中有空格、为空值等问题。
-             
-             if regexp '(GRUBX|grubx)64.efi$' "$file" ; then
-               cl_name=$file
+for file in (*)/EFI/*/*64.*; do
+  
+        regexp -s 1:rootdev -s 2:filename '^(\(.*\))(/.*)$' "$file"
+        if regexp -s efi_type '(GRUBX|grubx|BOOTX|bootx)64[.](efi|EFI)$' "$filename"; then
+           
+          probe --set fs --fs "$rootdev"
+          if [ x"$fs" = xiso9660  ]; then
+            probe --set cd_label --label "$rootdev"
           
-               menuentry "$cd_label on $rootdev (grubx64.efi/ddrescue/partclone.dd) ->" "$rootdev" "$cl_name" {
+            cl_name=$filename
+          
+               menuentry "$cd_label on $rootdev ($efi_type/ddrescue/partclone.dd) ->" "$rootdev" "$cl_name" {
                 root=$2
                 cl_name=$3
                 chainloader $cl_name
-              }
-              
-              elif regexp '(BOOTX|bootx)64.efi$' "$file" ; then
-                
-                  cl_name=$file
-         
-                 menuentry "$cd_label on $rootdev (bootx64.efi/ddrescue/partclone.dd) ->" "$rootdev" "$cl_name" {
-                   root=$2
-                   cl_name=$3
-                   chainloader $cl_name
-                 }              
-              fi
-
-#        done   
-     fi
+              }  
+           fi
+        fi           
          
 done
 
