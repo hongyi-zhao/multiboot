@@ -1,19 +1,44 @@
 
+    insmod part_msdos
+    insmod ntfs
+	
+    insmod part_gpt
+    insmod ext2
+    insmod iso9660
+    insmod regexp
+    insmod loopback
+        
+    insmod chain
+
 for dev in (*); do
         
          probe --set fs --fs $dev
-         if [ x"$fs" = x"iso9660"  ] && [ -e $dev/EFI/boot/grubx64.efi ]; then
-         probe --set cd_label --label $dev
-         chainloader_name=$dev/EFI/boot/grubx64.efi
+         if [ x"$fs" = x"iso9660"  ]; then
+           probe --set cd_label --label $dev
+           if [ -e $dev/EFI/boot/grubx64.efi ]; then
+             cl_name=$dev/EFI/boot/grubx64.efi
          
-         menuentry "$cd_label (ddrescue / partclone.dd) ->" "$dev" "$chainloader_name" {
-         root=$2
-         chainloader $chainloader_name
-    }
+              menuentry "$cd_label (grubx64.efi/ddrescue/partclone.dd) ->" "$dev" "$cl_name" {
+                root=$2
+                cl_name=$3
+                chainloader $cl_name
+              }
 
+           elif [ -e $dev/EFI/boot/bootx64.efi ]; then
+           
+               cl_name=$dev/EFI/boot/bootx64.efi
+         
+              menuentry "$cd_label (bootx64.efi/ddrescue/partclone.dd) ->" "$dev" "$cl_name" {
+                root=$2
+                cl_name=$3
+                chainloader $cl_name
+              }         
+           
+             
+           
            
          fi        
-
+     fi
          
 done
 
