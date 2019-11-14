@@ -11,7 +11,8 @@
     insmod chain
 
 for file in (*)/EFI/*/*; do
-        
+      
+        if [ ! -e "$file" ]; then continue; fi  
          
         if regexp -s 1:rootdev 2:efi '^(\(.*\)).*/(GRUBX|grubx|BOOTX|bootx)64$' "$file"; then 
          
