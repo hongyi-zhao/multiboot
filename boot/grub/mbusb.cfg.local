@@ -13,9 +13,10 @@
 for dev in (*); do
 
          probe --set fs --fs $dev
-         if [ x"$fs" = x"iso9660"  ]; then
-           probe --set cd_label --label $dev
-         fi  
+         if [ x"$fs" != x"iso9660"  ]; then continue; fi
+
+         probe --set cd_label --label $dev
+           
          
          # Skip duplicate ISOs
          if regexp "$cd_label" "$cd_label_tot"; then continue; fi
