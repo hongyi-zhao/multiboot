@@ -12,9 +12,8 @@
 
 for file in (*)/EFI/*/*; do
       
-        if [ ! -e "$file" ]; then continue; fi  
-         
-        if regexp -s 1:rootdev 2:efi '^(\(.*\)).*/(GRUBX|grubx|BOOTX|bootx)64$' "$file"; then 
+       
+        if regexp -s 1:rootdev -s 2:efi '^(\(.*\)).*/(GRUBX|grubx|BOOTX|bootx)64$' "$file"; then 
          
          probe --set fs --fs $rootdev
          if [ x"$fs" != x"iso9660"  ]; then continue; fi
