@@ -20,7 +20,11 @@ for file in (*)/EFI/*/*64.*; do
           probe --set fs --fs "$rootdev"
           if [ x"$fs" = xiso9660  ]; then
             probe --set cd_label --label "$rootdev"
-            if regexp "$cd_label" "$cd_label_tot"; then continue; fi
+            if regexp "$cd_label" "$cd_label_tot"; then
+              if regexp  '(BOOTX|bootx)' "$efi_name"; then
+                continue
+              fi 
+            fi
             cd_label_tot="${cd_label_tot}${cd_label}"
             cl_name=$filename
           
