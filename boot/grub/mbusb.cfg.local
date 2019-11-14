@@ -1,0 +1,58 @@
+
+for dev in (*); do
+        
+         probe --set fs --fs $dev
+         if [ x"$fs" = x"iso9660"  ] && [ -e $dev/EFI/boot/grubx64.efi ]; then
+         probe --set cd_label --label $dev
+         chainloader_name=$dev/EFI/boot/grubx64.efi
+         
+         menuentry "$cd_label (ddrescue / partclone.dd) ->" "$dev" "$chainloader_name" {
+         root=$2
+         chainloader $chainloader_name
+    }
+
+           
+         fi        
+
+         
+done
+
+# 
+# for isofile in $isopath/systemrescuecd-*.iso; do
+#   if [ -e "$isofile" ]; then
+#     regexp --set=isoname "$isopath/(.*)" "$isofile"
+#     Skip old ISOs
+#     if regexp "x86" "$isofile"; then continue; fi
+# 
+# submenu "$isoname (grub.cfg) ->" "$isofile" {
+#       iso_path="$2"
+#       export iso_path
+#       search --set=root --file "$iso_path"
+#       loopback loop "$iso_path"
+#       root=(loop)
+#       configfile /boot/grub/grubsrcd.cfg
+#       loopback --delete loop
+#     }
+# 
+# 
+# 
+#     submenu "$isoname ->" "$isofile" {
+#       iso_path="$2"
+#       loopback loop "$iso_path"
+#       probe --label --set=cd_label (loop)
+#       bootoptions="img_dev=$imgdevpath img_loop=$iso_path earlymodules=loop archisobasedir=sysresccd archisolabel=$cd_label"
+#       menuentry "Boot SystemRescueCd using default options" {
+#         linux (loop)/sysresccd/boot/x86_64/vmlinuz $bootoptions
+#         initrd (loop)/sysresccd/boot/intel_ucode.img (loop)/sysresccd/boot/amd_ucode.img (loop)/sysresccd/boot/x86_64/sysresccd.img
+#       }
+#       menuentry "Boot SystemRescueCd and copy system to RAM" {
+#         linux (loop)/sysresccd/boot/x86_64/vmlinuz $bootoptions copytoram
+#         initrd (loop)/sysresccd/boot/intel_ucode.img (loop)/sysresccd/boot/amd_ucode.img (loop)/sysresccd/boot/x86_64/sysresccd.img
+#       }
+#       menuentry "Run Memtest86+ (RAM test)" {
+#         bootoptions=""
+#         linux16 (loop)/sysresccd/boot/memtest $bootoptions
+#       }
+#     }
+#   fi
+# done
