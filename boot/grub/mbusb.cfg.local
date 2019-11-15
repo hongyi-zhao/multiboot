@@ -12,6 +12,8 @@
 
 unset cd_label_tot
 
+set origroot=$root
+
 for i in (*)/EFI/* (*)/efi/* (*)/boot/loader.efi; do
        
         regexp -s rootdev '^(\(.*\))' "$i"
@@ -34,8 +36,10 @@ for i in (*)/EFI/* (*)/efi/* (*)/boot/loader.efi; do
                 cd_label_tot="${cd_label_tot} ${cd_label}"
                 
                 menuentry "$cd_label on $rootdev ($loader_name/ddrescue/partclone.dd) ->" "$rootdev" "$loader_path" {
-                root=$2
+                set root=$2
                 chainloader $3
+                boot
+                set root=$origroot
               }  
        
            fi          
@@ -51,8 +55,10 @@ for i in (*)/EFI/* (*)/efi/* (*)/boot/loader.efi; do
                 cd_label_tot="${cd_label_tot} ${cd_label}"
            
                 menuentry "$cd_label on $rootdev ($loader_name/ddrescue/partclone.dd) ->" "$rootdev" "$loader_path" {
-                root=$2
+                set root=$2
                 chainloader $3
+                boot
+                set root=$origroot                
               }  
        
            fi         
@@ -66,8 +72,10 @@ for i in (*)/EFI/* (*)/efi/* (*)/boot/loader.efi; do
                 cd_label_tot="${cd_label_tot} ${cd_label}"
            
                 menuentry "$cd_label on $rootdev ($loader_name/ddrescue/partclone.dd) ->" "$rootdev" "$loader_path" {
-                root=$2
+                set root=$2
                 chainloader $3
+                boot
+                set root=$origroot                
               }  
        
            fi         
@@ -84,9 +92,11 @@ for i in (*)/EFI/* (*)/efi/* (*)/boot/loader.efi; do
                  cd_label_tot="${cd_label_tot} Microsoft Windows"
                 
                 menuentry "Windows on $rootdev ($loader_name/ddrescue/partclone.dd) ->" "$rootdev" "$loader_path" {
-                root=$2
+                set root=$2
                 chainloader $3
-              }  
+                boot
+                set root=$origroot
+                }  
        
              fi         
          
