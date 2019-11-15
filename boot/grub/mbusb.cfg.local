@@ -22,7 +22,7 @@ for i in (*)/EFI/* (*)/efi/* (*)/boot/loader.efi; do
           probe --set cd_label --label "$rootdev"
           
           # arch 用这个方法不行，需要修改相关的启动配置配置后用grub调用。
-          if regexp 'ARCH_[0-9]+' "$cd_label"; then continue; fi
+          if regexp '^ARCH_[1-9][0-9]+$' "$cd_label"; then continue; fi
           
           # 优先使用基于 GRUBX64 / grubx64  相关efi文件的启动方法。
           # 因为观察到，在 GRUBX64 / grubx64 和 BOOTX64 / bootx64 相关的efi文件都存在的情况下，
