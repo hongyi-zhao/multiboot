@@ -12,7 +12,7 @@
 
 unset cd_label_tot
 
-for i in (*)/EFI/* (*)/efi/*; do
+for i in (*)/EFI/* (*)/efi/* (*)/boot/*; do
        
         regexp -s rootdev '^(\(.*\))' "$i"
 
@@ -22,12 +22,12 @@ for i in (*)/EFI/* (*)/efi/*; do
           probe --set cd_label --label "$rootdev"
 
           for file in $i/GRUBX64.* $i/grubx64.*; do
-           if regexp -s 1:grubx_path -s 2:grubx_name '^\(.*\)(/.*/([^/]+(efi|EFI)))$' "$file"; then
+           if regexp -s 1:loader_path -s 2:loader_name '^\(.*\)(/.*/([^/]+(efi|EFI)))$' "$file"; then
                
                 if regexp "$cd_label" "$cd_label_tot"; then continue; fi
                 cd_label_tot="${cd_label_tot} ${cd_label}"
                 
-                menuentry "$cd_label on $rootdev ($grubx_name/ddrescue/partclone.dd) ->" "$rootdev" "$grubx_path" {
+                menuentry "$cd_label on $rootdev ($loader_name/ddrescue/partclone.dd) ->" "$rootdev" "$loader_path" {
                 root=$2
                 chainloader $3
               }  
@@ -39,12 +39,12 @@ for i in (*)/EFI/* (*)/efi/*; do
          
          for file in $i/BOOTX64.* $i/bootx64.*; do
         
-           if regexp -s 1:bootx_path -s 2:bootx_name '^\(.*\)(/.*/([^/]+(efi|EFI)))$' "$file"; then
+           if regexp -s 1:loader_path -s 2:loader_name '^\(.*\)(/.*/([^/]+(efi|EFI)))$' "$file"; then
            
                 if regexp "$cd_label" "$cd_label_tot"; then continue; fi
                 cd_label_tot="${cd_label_tot} ${cd_label}"
            
-                menuentry "$cd_label on $rootdev ($bootx_name/ddrescue/partclone.dd) ->" "$rootdev" "$bootx_path" {
+                menuentry "$cd_label on $rootdev ($loader_name/ddrescue/partclone.dd) ->" "$rootdev" "$loader_path" {
                 root=$2
                 chainloader $3
               }  
@@ -53,17 +53,34 @@ for i in (*)/EFI/* (*)/efi/*; do
          
          done
          
+         # for Freebsd
+          for file in $i/loader.efi; do
+        
+           if regexp -s 1:loader_path -s 2:loader_name '^\(.*\)(/.*/([^/]+(efi|EFI)))$' "$file"; then
+           
+                if regexp "$cd_label" "$cd_label_tot"; then continue; fi
+                cd_label_tot="${cd_label_tot} ${cd_label}"
+           
+                menuentry "$cd_label on $rootdev ($loader_name/ddrescue/partclone.dd) ->" "$rootdev" "$loader_path" {
+                root=$2
+                chainloader $3
+              }  
+       
+           fi         
+         
+         done        
+         
           # for Microsoft Windows           
           elif [ x$fs = xntfs ]; then
           
            for file in $i/BOOTX64.* $i/bootx64.*; do
         
-             if regexp -s 1:bootx_path -s 2:bootx_name '^\(.*\)(/.*/([^/]+(efi|EFI)))$' "$file"; then
+             if regexp -s 1:loader_path -s 2:loader_name '^\(.*\)(/.*/([^/]+(efi|EFI)))$' "$file"; then
            
                  if regexp "Microsoft Windows" "$cd_label_tot"; then continue; fi
                  cd_label_tot="${cd_label_tot} Microsoft Windows"
                 
-                menuentry "Windows on $rootdev ($bootx_name/ddrescue/partclone.dd) ->" "$rootdev" "$bootx_path" {
+                menuentry "Windows on $rootdev ($loader_name/ddrescue/partclone.dd) ->" "$rootdev" "$loader_path" {
                 root=$2
                 chainloader $3
               }  
