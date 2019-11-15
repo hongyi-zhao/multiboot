@@ -52,8 +52,26 @@ for i in (*)/EFI/* (*)/efi/*; do
            fi         
          
          done
-
-
+         
+          # for Microsoft Windows           
+          elif [ x$fs = xntfs ]; then
+          
+           for file in $i/BOOTX64.* $i/bootx64.*; do
+        
+             if regexp -s 1:bootx_path -s 2:bootx_name '^\(.*\)(/.*/([^/]+(efi|EFI)))$' "$file"; then
+           
+                 if regexp "Microsoft Windows" "$cd_label_tot"; then continue; fi
+                 cd_label_tot="${cd_label_tot} Microsoft Windows"
+                
+                menuentry "Windows on $rootdev ($bootx_name/ddrescue/partclone.dd) ->" "$rootdev" "$bootx_path" {
+                root=$2
+                chainloader $3
+              }  
+       
+             fi         
+         
+           done
+            
         fi 
            
          
