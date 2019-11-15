@@ -12,7 +12,7 @@
 
 unset cd_label_tot
 
-for i in (*)/EFI/* (*)/efi/* (*)/boot/*; do
+for i in (*)/EFI/* (*)/efi/* (*)/boot/loader.efi; do
        
         regexp -s rootdev '^(\(.*\))' "$i"
 
@@ -54,9 +54,7 @@ for i in (*)/EFI/* (*)/efi/* (*)/boot/*; do
          done
          
          # for Freebsd
-          for file in $i/loader.efi; do
-        
-           if regexp -s 1:loader_path -s 2:loader_name '^\(.*\)(/.*/([^/]+(efi|EFI)))$' "$file"; then
+           if regexp -s 1:loader_path -s 2:loader_name '^\(.*\)(/boot/loader.efi)$' "$i"; then
            
                 if regexp "$cd_label" "$cd_label_tot"; then continue; fi
                 cd_label_tot="${cd_label_tot} ${cd_label}"
@@ -67,8 +65,7 @@ for i in (*)/EFI/* (*)/efi/* (*)/boot/*; do
               }  
        
            fi         
-         
-         done        
+    
          
           # for Microsoft Windows           
           elif [ x$fs = xntfs ]; then
