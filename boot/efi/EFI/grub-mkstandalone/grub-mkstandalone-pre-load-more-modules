@@ -25,7 +25,7 @@ man grub-mkimage 有下面的选项：
 
 为了最大的成功率，使用下面的集合，对于预加载阶段也足够用了：
 
-grub-mkstandalone -O x86_64-efi -o grub-mkstandalone-x86_64.efi --modules='boot chain configfile ext2 iso9660 loopback memdisk normal ntfs part_gpt part_msdos probe regexp search search_fs_file search_fs_uuid search_label syslinuxcfg tar test tr true' boot/grub/grub.cfg=./grub-mkstandalone.cfg
+grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='boot chain configfile ext2 iso9660 loopback memdisk normal ntfs part_gpt part_msdos probe regexp search search_fs_file search_fs_uuid search_label syslinuxcfg tar test tr true' boot/grub/grub.cfg=./grub-mkstandalone.cfg
 
 
 
