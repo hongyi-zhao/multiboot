@@ -16,3 +16,7 @@ sudo efibootmgr --create --disk /dev/sda --part 2 --loader /EFI/grub-mkstandalon
 
 sudo efibootmgr --create --disk /dev/sdc --part 2 --loader /EFI/grub-mkstandalone/grub-mkstandalone-x86_64.efi -w --label "grub-mkstandalone-x86_64 usb"
 
+
+参考后来gmail，arch maillist的讨论，似乎应该用下面的形式：
+
+--loader \\EFI\\grub-mkstandalone\\grub-mkstandalone-x86_64.efi
