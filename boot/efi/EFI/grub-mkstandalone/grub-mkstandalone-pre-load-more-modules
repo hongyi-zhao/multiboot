@@ -19,9 +19,13 @@ man grub-mkimage 有下面的选项：
 
 首先要 sudo make install 自己编译的grub，然后：
 
-经过测试，加载下面的这些模块：
+这些预加载的模块如果加载不当，会导致启动失败。
 
-grub-mkstandalone -O x86_64-efi -o grub-mkstandalone-x86_64.efi --modules='boot chain configfile disk diskfilter echo eval ext2 fat file hdparm hello help hexdump iso9660 jfs loopback memdisk nativedisk newc normal ntfs ntfscomp odc part_bsd part_gpt part_msdos parttool probe procfs progress read reboot regexp reiserfs romfs scsi search search_fs_file search_fs_uuid search_label sleep sleep_test squash4 syslinuxcfg tar test tr trig true udf xfs xzio zfs zfscrypt zfsinfo zstd' boot/grub/grub.cfg=./grub-mkstandalone.cfg
+比如，下面的命令如果预加载 progress 模块，就会造成 sysrcd 的引导死掉。
+
+为了最大的成功率，使用下面的集合，对于预加载阶段也足够用了：
+
+grub-mkstandalone -O x86_64-efi -o grub-mkstandalone-x86_64.efi --modules='boot chain configfile ext2 iso9660 loopback memdisk normal ntfs part_gpt part_msdos probe regexp search search_fs_file search_fs_uuid search_label syslinuxcfg tar test tr true' boot/grub/grub.cfg=./grub-mkstandalone.cfg
 
 
 
