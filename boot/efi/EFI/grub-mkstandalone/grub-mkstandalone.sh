@@ -3,10 +3,12 @@
 # 需要使用下面的选项，否则device，partition 名解析不出来：
 #  --modules=MODULES      pre-load specified modules MODULES
 # --modules='fat part_msdos part_gpt ext2 search_fs_uuid configfile'
-werner@kubuntu:/mnt/sda2$ sudo grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='fat part_msdos part_gpt ext2 regexp iso9660 loopback chain search configfile'  boot/grub/grub.cfg=./grub-mkstandalone.cfg
+
 
 又加入以下预加载的模块：
-grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='boot chain configfile ext2 iso9660 loopback memdisk normal ntfs part_gpt part_msdos probe regexp search search_fs_file search_fs_uuid search_label syslinuxcfg tar test tr true' boot/grub/grub.cfg=./grub-mkstandalone.cfg
+这些模块够用就行，后续需要再加载即可。
+另外，当使用grub-mkstandalone的时候，还会自动预加载 memdisk 、tar 两个模块。
+grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='fat ntfs part_msdos part_gpt ext2 iso9660 loopback probe regexp search chain configfile syslinuxcfg test tr true' boot/grub/grub.cfg=./grub-mkstandalone.cfg
 
 
 #
