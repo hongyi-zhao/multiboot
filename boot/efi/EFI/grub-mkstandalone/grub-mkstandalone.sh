@@ -18,11 +18,13 @@ grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='fat part_msdos part_gp
 
 # grubconfig.git/doc/Hybrid-UEFI-GPT+BIOS-GPT-MBR-boot/[steps-used-by-me]grub2-gpt-bios-efi
 
-sudo efibootmgr --create --disk /dev/sda --part 2 --loader /EFI/grub-mkstandalone/grub-mkstandalone-x86_64.efi -w --label "grub-mkstandalone-x86_64 hd"
-
-sudo efibootmgr --create --disk /dev/sdc --part 2 --loader /EFI/grub-mkstandalone/grub-mkstandalone-x86_64.efi -w --label "grub-mkstandalone-x86_64 usb"
-
-
 参考后来gmail，arch maillist的讨论，似乎应该用下面的形式：
 
 --loader \\EFI\\grub-mkstandalone\\grub-mkstandalone-x86_64.efi
+
+sudo efibootmgr --create --disk /dev/sda --part 1 --loader \\EFI\\grub-mkstandalone\\grubx64.efi -w --label "grub-mkstandalone-x86_64 hd"
+
+sudo efibootmgr --create --disk /dev/sdc --part 1 --loader \\EFI\\grub-mkstandalone\\grubx64.efi -w --label "grub-mkstandalone-x86_64 usb p1"
+
+sudo efibootmgr --create --disk /dev/sdc --part 2 --loader \\EFI\\grub-mkstandalone\\grubx64.efi -w --label "grub-mkstandalone-x86_64 usb p2"
+
