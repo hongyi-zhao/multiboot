@@ -1,6 +1,9 @@
 # mbusb 的方法中，有些也是失败的：
 # 比如 freebsd，sysrcd，这些可以用我的 dd 方法补充。
 
+# 在基于 dd 的sysrcd的启动中，如果有多个可用 的 sysrcd，实际上启动的是最先找到的那个。
+# 目前还不不知道如何精确控制启动相应的 sysrcd。
+
 
     insmod part_msdos
     insmod ntfs
