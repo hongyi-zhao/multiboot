@@ -1,2 +1,0 @@
-
-grubconfig.git/boot/efi/EFI$ rsync -av /mnt/sda2/EFI/ .
