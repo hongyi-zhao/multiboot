@@ -22,9 +22,17 @@ grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='fat part_msdos part_gp
 
 --loader \\EFI\\grub-mkstandalone\\grub-mkstandalone-x86_64.efi
 
+
 sudo efibootmgr --create --disk /dev/sda --part 1 --loader \\EFI\\grub-mkstandalone\\grubx64.efi -w --label "grub-mkstandalone-grubx64 hd"
 
 sudo efibootmgr --create --disk /dev/sdc --part 1 --loader \\EFI\\grub-mkstandalone\\grubx64.efi -w --label "grub-mkstandalone-grubx64 usb p1"
 
 sudo efibootmgr --create --disk /dev/sdc --part 2 --loader \\EFI\\grub-mkstandalone\\grubx64.efi -w --label "grub-mkstandalone-grubx64 usb p2"
+
+实际测试，下面的形式也可以：
+
+sudo efibootmgr -c -d /dev/sda -p 1 -w -L 'grub-mkstandalone-grubx64 hd' -l /EFI/grub-mkstandalone/grubx64.efi
+
+
+
 

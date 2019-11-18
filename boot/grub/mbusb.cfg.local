@@ -1,3 +1,6 @@
+# mbusb 的方法中，有些也是失败的：
+# 比如 freebsd，sysrcd，这些可以用我的 dd 方法补充。
+
 
     insmod part_msdos
     insmod ntfs
