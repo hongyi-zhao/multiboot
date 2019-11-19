@@ -23,12 +23,12 @@ set origroot=$root
 
 for i in (*)/EFI/* (*)/efi/* (*)/boot/loader.efi; do
        
-        regexp -s rootdev '^(\(.*\))' "$i"
+        regexp -s _part '^(\(.*\))' "$i"
 
-        probe --set fs --fs "$rootdev"
+        probe --set fs --fs "$_part"
         if [ x$fs = xiso9660 ]; then
         
-          probe --set cd_label --label "$rootdev"
+          probe --set cd_label --label "$_part"
           
           # arch 用这个方法不行，需要修改相关的启动配置配置后用grub调用。
           if regexp '^ARCH_[1-9][0-9]+$' "$cd_label"; then continue; fi
@@ -37,12 +37,12 @@ for i in (*)/EFI/* (*)/efi/* (*)/boot/loader.efi; do
           # 因为观察到，在 GRUBX64 / grubx64 和 BOOTX64 / bootx64 相关的efi文件都存在的情况下，
           # chainloader GRUBX64 / grubx64 相关 efi 才会成功。
           for file in $i/GRUBX64.* $i/grubx64.*; do
-            if regexp -s 1:loader_path -s 2:loader_name '^\(.*\)(/.*/([^/]+(efi|EFI)))$' "$file"; then
+            if regexp -s 1:loader_root -s 2:loader_dirname 3:loader_basename '^(\(.*\))(/.*/)([^/]+(efi|EFI))$' "$file"; then
               # 去重处理：     
               if regexp "$cd_label" "$cd_label_tot"; then continue; fi
                 cd_label_tot="${cd_label_tot} ${cd_label}"
                 
-                menuentry "$cd_label on $rootdev ($loader_name/ddrescue/partclone.dd) ->" "$rootdev" "$loader_path" {
+                menuentry "$cd_label on $loader_root ($loader_basename) ->" "$loader_root" "$loader_dirname$loader_basename" {
                 set root=$2
                 chainloader $3
                 boot
@@ -56,12 +56,11 @@ for i in (*)/EFI/* (*)/efi/* (*)/boot/loader.efi; do
          
          for file in $i/BOOTX64.* $i/bootx64.*; do
         
-           if regexp -s 1:loader_path -s 2:loader_name '^\(.*\)(/.*/([^/]+(efi|EFI)))$' "$file"; then
-           
+           if regexp -s 1:loader_root -s 2:loader_dirname 3:loader_basename '^(\(.*\))(/.*/)([^/]+(efi|EFI))$' "$file"; then       
                 if regexp "$cd_label" "$cd_label_tot"; then continue; fi
                 cd_label_tot="${cd_label_tot} ${cd_label}"
-           
-                menuentry "$cd_label on $rootdev ($loader_name/ddrescue/partclone.dd) ->" "$rootdev" "$loader_path" {
+                           
+                menuentry "$cd_label on $loader_root ($loader_basename) ->" "$loader_root" "$loader_dirname$loader_basename" {
                 set root=$2
                 chainloader $3
                 boot
@@ -73,12 +72,11 @@ for i in (*)/EFI/* (*)/efi/* (*)/boot/loader.efi; do
          done
          
          # for Freebsd
-           if regexp -s 1:loader_path -s 2:loader_name '^\(.*\)(/boot/(loader.efi))$' "$i"; then
-           
+           if regexp -s 1:loader_root -s 2:loader_dirname 3:loader_basename '^(\(.*\))(/boot/)(loader.efi)$' "$i"; then   
                 if regexp "$cd_label" "$cd_label_tot"; then continue; fi
                 cd_label_tot="${cd_label_tot} ${cd_label}"
            
-                menuentry "$cd_label on $rootdev ($loader_name/ddrescue/partclone.dd) ->" "$rootdev" "$loader_path" {
+                menuentry "$cd_label on $loader_root ($loader_basename) ->" "$loader_root" "$loader_dirname$loader_basename" {
                 set root=$2
                 chainloader $3
                 boot
@@ -93,17 +91,17 @@ for i in (*)/EFI/* (*)/efi/* (*)/boot/loader.efi; do
           
            for file in $i/BOOTX64.* $i/bootx64.*; do
         
-             if regexp -s 1:loader_path -s 2:loader_name '^\(.*\)(/.*/([^/]+(efi|EFI)))$' "$file"; then
+             if regexp -s 1:loader_root -s 2:loader_dirname 3:loader_basename '^(\(.*\))(/.*/)([^/]+(efi|EFI))$' "$file"; then    
            
-                 if regexp "Microsoft Windows" "$cd_label_tot"; then continue; fi
-                 cd_label_tot="${cd_label_tot} Microsoft Windows"
+               if regexp "Microsoft Windows" "$cd_label_tot"; then continue; fi
+               cd_label_tot="${cd_label_tot} Microsoft Windows"
                 
-                menuentry "Windows on $rootdev ($loader_name/ddrescue/partclone.dd) ->" "$rootdev" "$loader_path" {
-                set root=$2
-                chainloader $3
-                boot
-                set root=$origroot
-                }  
+               menuentry "Windows on $loader_root ($loader_basename) ->" "$loader_root" "$loader_dirname$loader_basename" {
+               set root=$2
+               chainloader $3
+               boot
+               set root=$origroot
+               }  
        
              fi         
          
