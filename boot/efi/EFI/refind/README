@@ -9,7 +9,7 @@ http://www.rodsbooks.com/refind/getting.html
 同时，将 refind-bin安装一份：
 
 sudo efibootmgr -c -d /dev/sda -p 1 -l /EFI/refind/refind-bin/refind/refind_x64.efi -L "refind-bin"
-sudo efibootmgr -c -d /dev/sda -p 1 -l /EFI/refind/refind-bin-gnuefi/refind/refind_x64.efi -L "refind-bin"
+sudo efibootmgr -c -d /dev/sda -p 1 -l /EFI/refind/refind-bin-gnuefi/refind/refind_x64.efi -L "refind-bin-gnuefi"
 
 
 
