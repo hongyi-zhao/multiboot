@@ -1,0 +1,14 @@
+ 
+http://www.rodsbooks.com/refind/getting.html
+
+
+这个功能非常强大。
+
+直接把 flashgrive 版本 dd 到 usb 某分区。即可。 dd 到硬盘是不行。
+
+同时，将 refind-bin安装一份：
+
+sudo efibootmgr -c -d /dev/sda -p 1 -l /EFI/refind/refind-bin/refind/refind_x64.efi -L "rEFInd"
+
+
+将他们配合使用。不用提供 refind.conf，他会自己搜索。
