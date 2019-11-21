@@ -11,8 +11,8 @@ http://www.rodsbooks.com/refind/getting.html
 A binary zip file—Download this if you want to install rEFInd and/or its filesystem drivers on an x86, x86-64, or ARM64 computer and have no need to test rEFInd first by booting it on an optical disc. This zip file package includes x86 (aka IA32), x86-64 (aka x64, AMD64, or EM64T), and ARM64 (aka AARCH64 or AA64) versions of rEFInd. Which you install depends on your architecture, as described on the Installing rEFInd page. Some users of Arch Linux have reported problems booting some specific Arch Linux kernels with rEFInd and some other tools. For them, a variant package exists in which the x86-64 binary was compiled with GNU-EFI rather than the usual TianoCore EDK2. This change helps some users with this problem.
 
 
-sudo efibootmgr -c -d /dev/sda -p 1 -l /EFI/refind/refind-bin/refind/refind_x64.efi -L "refind-bin"
-sudo efibootmgr -c -d /dev/sda -p 1 -l /EFI/refind/refind-bin-gnuefi/refind/refind_x64.efi -L "refind-bin-gnuefi"
+sudo efibootmgr -c -d /dev/sda -p 1 -l /EFI/refind/refind-bin/refind/refind_x64.efi -L "refind-bin hd"
+sudo efibootmgr -c -d /dev/sda -p 1 -l /EFI/refind/refind-bin-gnuefi/refind/refind_x64.efi -L "refind-bin-gnuefi hd"
 
 
 
