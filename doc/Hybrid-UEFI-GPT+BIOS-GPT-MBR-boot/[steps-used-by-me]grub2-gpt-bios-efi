@@ -204,8 +204,8 @@ TARGET SOURCE  FSTYPE OPTIONS
 
 /EFI/mygrub/grubx64.efi
 EFI/mygrub/grubx64.efi
-\EFI\mygrub\grubx64.efi
-EFI\mygrub\grubx64.efi
+\\EFI\\mygrub\\grubx64.efi
+EFI\\mygrub\\grubx64.efi
 
 
 
