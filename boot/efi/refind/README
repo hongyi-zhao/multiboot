@@ -1,6 +1,6 @@
  
-Based on the discussion with the auther of refind, I deduced the following method for cobining the grub2 and refind-cd form:
-
+Based on the discussion with the auther of refind, I deduced the method which
+combining the grub2 and refind-cd as following:
 
 1- use the refind-cd form, and put it's content on a fat32 root partition.
    this method is good for usb/hd. 
@@ -8,8 +8,8 @@ Based on the discussion with the auther of refind, I deduced the following metho
 
 All things is done!
 
-with the above method, there is no need to bother efibootmgr for creating nvram entries.  
-and further more, no need to set boot/esp flag on the efi partitions.
+With the above method, there is no need to bother efibootmgr for creating nvram entries and   
+set boot/esp flag on the efi partitions.
 
 
 
