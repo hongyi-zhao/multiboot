@@ -1,8 +1,24 @@
  
+Based on the discussion with the auther of refind, I deduced the following method for cobining the grub2 and refind-cd form:
+
+
+1- use the refind-cd form, and put it's content on a fat32 root partition.
+   this method is good for usb/hd. 
+2- put the /EFI/grub-mkstandalone on another fat32 partition.
+
+All things is done!
+
+
+with the above method, there is no need to bother efibootmgr for creating nvram entries.  
+and further more, no need to set boot/esp flag on the fat32 partitions.
+
+
+
+
+Previous note:
+ 
+===================================
 http://www.rodsbooks.com/refind/getting.html
-
-
-这个功能非常强大。
 
 直接把 flashgrive 版本 dd 到 usb 某分区。即可。 dd 到硬盘不行。
 
