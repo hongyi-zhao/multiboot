@@ -12,7 +12,7 @@ combining the grub2 and refind-cd as following:
 
    rsync -av /media/werner/rEFInd_0.11.4/ .
    
-3. For the fallback purpose, put the subfolder refind of refind-bin-0.11.4 under the EFI/ directory, i.e.,
+3. Optionally, for the fallback purpose, put the subfolder refind under refind-bin-0.11.4 to the EFI/ directory, i.e.,
    the same directory which the grub-mkstandalone resides.
  
    
