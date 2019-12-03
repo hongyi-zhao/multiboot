@@ -4,7 +4,7 @@ Based on the discussion with the auther of refind, I deduced the following metho
 
 1- use the refind-cd form, and put it's content on a fat32 root partition.
    this method is good for usb/hd. 
-2- put the /EFI/grub-mkstandalone on another fat32 root partition.
+2- put the /EFI/* on another fat32 root partition.
 
 All things is done!
 
