@@ -1,46 +1,26 @@
- 
-Based on the discussion with the auther of refind, I deduced the method which
-combining the grub2 and refind-cd as following:
+http://www.rodsbooks.com/refind/getting.html 
 
-1. Make the stuff here according the notes there:
-   EFI/grub-mkstandalone
 
-2. Use the refind-cd form, mount the iso and then put it's content on a fat32 root partition.
-   This method is good for usb/hd.
+Based on the discussion with the author of refind, I deduced the following method which
+combining the usage of grub2 and refind-cd:
 
-   Say, for using the rsync as follows:
-
-   rsync -av /media/werner/rEFInd_0.11.4/ .
+1. Make the following stuff according the notes there:
    
-3. Optionally, for the fallback purpose, put the subfolder refind under refind-bin-0.11.4 to the EFI/ directory, i.e.,
+   EFI/grub-mkstandalone/
+
+2. Mount the refind-cd and then put it's content on a fat32 root partition. 
+   This method is workable for both usb and hd. 
+   You can do this by using the rsync as follows:
+   
+   rsync -av /media/werner/rEFInd_0.11.4/ /path/to/fat32/root/partition
+   
+3. Optionally, for the fallback purpose, copy the subfolder refind under refind-bin to the EFI/ directory, i.e.,
    the same directory which the grub-mkstandalone resides.
  
    
 All things are done!
 
 With the above method, there is no need to creating nvram entries with efibootmgr and   
-set boot/esp flag on the efi partitions.  Furthermore, except the refind-cd's content need a fat32 root partition, 
-all other stuff can use more mordern file systems, say ext4.
+set boot/esp flag on the efi partitions.  Furthermore, only the refind-cd's content need to be put on a 
+fat32 root partition, all other stuff can use more mordern file systems, say ext4.
 
-
-
-
-
-Previous note:
- 
-===================================
-http://www.rodsbooks.com/refind/getting.html
-
-直接把 flashgrive 版本 dd 到 usb 某分区。即可。 dd 到硬盘不行。
-
-同时，将 refind-bin 安装一份(有两个版本)：
-
-A binary zip file—Download this if you want to install rEFInd and/or its filesystem drivers on an x86, x86-64, or ARM64 computer and have no need to test rEFInd first by booting it on an optical disc. This zip file package includes x86 (aka IA32), x86-64 (aka x64, AMD64, or EM64T), and ARM64 (aka AARCH64 or AA64) versions of rEFInd. Which you install depends on your architecture, as described on the Installing rEFInd page. Some users of Arch Linux have reported problems booting some specific Arch Linux kernels with rEFInd and some other tools. For them, a variant package exists in which the x86-64 binary was compiled with GNU-EFI rather than the usual TianoCore EDK2. This change helps some users with this problem.
-
-
-sudo efibootmgr -c -d /dev/sda -p 1 -l /EFI/refind/refind-bin/refind/refind_x64.efi -L "refind-bin hd"
-sudo efibootmgr -c -d /dev/sda -p 1 -l /EFI/refind/refind-bin-gnuefi/refind/refind_x64.efi -L "refind-bin-gnuefi hd"
-
-
-
-将他们配合使用。不用提供 refind.conf，他会自己搜索。
