@@ -1,4 +1,4 @@
-select the oses supported by intel parallel studio xe cluster edition.
+The oses supported by intel parallel studio xe cluster edition.
 
 
 https://software.intel.com/en-us/parallel-studio-xe/documentation/system-requirements
@@ -23,18 +23,7 @@ Intel® MPI Library and Intel® Trace Analyzer and Collector are supported on In
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+***********************
 Previously write for freebsd, it seems that this os is not so popular and 
 still has many difficulies for using, even though it's famous for some features, say, stability and security.
 
