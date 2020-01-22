@@ -1,4 +1,5 @@
-sudo apt-get build-dep grub2
+$ sudo apt-get build-dep grub2
+$ sudo apt-get install libzfslinux-dev
 
 直接使用系统的包库的方法：
 sudo apt install grub-pc-bin grub-efi-ia32-bin grub-efi-amd64-bin
@@ -25,6 +26,7 @@ INSTALL
 ./configure --target=x86_64 --with-platform=efi
 ./configure --target=i386 --with-platform=pc
 
+If master branch cannot compile successfully, then try the following:
 
 但是make遇到错误：
 symlist.h:26:10: fatal error: ../include/grub/machine/pxe.h: No such file or directory
@@ -49,7 +51,7 @@ cd grubconfig.git/boot/grub
 cp -r /usr/local/lib/grub/* 
 
 
-使用 grub-mkstandalone 的话，以为已经嵌入所有的模块，不需要上面的操作。
+使用 grub-mkstandalone 的话，因为已经嵌入所有的模块，不需要上面的操作。
 
 
 
