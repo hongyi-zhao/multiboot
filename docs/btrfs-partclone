@@ -5,5 +5,18 @@ It seems gparted cannot do the resize/check manipulations for btrfs smoothly, so
  4517  sudo umount /media/werner/57a9b966-ab87-4877-976c-9a3cabab5798 
  4520  sudo partclone.btrfs -d -c -s /dev/sdb2 -o sdb2
  4521  sudo partclone.btrfs -d -r -s sdb2 -o /dev/sda7
- 4522  sudo btrfs filesystem show
 
+$ sudo btrfs filesystem show 
+Label: none  uuid: 57a9b966-ab87-4877-976c-9a3cabab5798
+	Total devices 1 FS bytes used 4.78GiB
+	devid    1 size 90.00GiB used 7.02GiB path /dev/sda7
+
+mount /dev/sda7 on /media/werner/57a9b966-ab87-4877-976c-9a3cabab5798, and then:
+
+let full space on /dev/sda7 be allocated to this btrfs volume:
+$ sudo btrfs filesystem resize max /media/werner/57a9b966-ab87-4877-976c-9a3cabab5798/
+Resize '/media/werner/57a9b966-ab87-4877-976c-9a3cabab5798/' of 'max'
+$ sudo btrfs filesystem show 
+Label: none  uuid: 57a9b966-ab87-4877-976c-9a3cabab5798
+	Total devices 1 FS bytes used 4.78GiB
+	devid    1 size 100.00GiB used 7.02GiB path /dev/sda7
