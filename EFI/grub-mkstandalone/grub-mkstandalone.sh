@@ -9,7 +9,7 @@
 #这些模块够用就行，后续需要再加载即可。
 #另外，当使用grub-mkstandalone的时候，还会自动预加载 memdisk 、tar 两个模块。
 
-grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='fat part_msdos part_gpt ext2 probe regexp search configfile' boot/grub/grub.cfg=./boot-grub-grub.cfg
+grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='fat part_msdos part_gpt ext2 probe regexp search configfile' boot/grub/grub.cfg=./boot/grub/grub.cfg
 
 
 #
