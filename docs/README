@@ -1,5 +1,5 @@
 http://www.rodsbooks.com/refind/getting.html 
-
+https://sourceforge.net/projects/refind/files/
 
 Based on the discussion with the author of refind, I deduced the following method which
 combining the usage of grub2 and refind-cd:
@@ -8,11 +8,29 @@ combining the usage of grub2 and refind-cd:
    
    EFI/grub-mkstandalone/
 
-2. Mount the refind-cd and then put it's content on a fat32 root partition. 
-   This method is workable for both usb and hd. 
-   You can do this by using the rsync as follows:
+2. Mount the refind-cd and then copy the EFI folder onto a fat32 root partition. 
    
-   rsync -av /media/werner/rEFInd_0.11.4/ /path/to/fat32/root/partition
+   rEFInd_0.11.5 works with this mothod, but 0.12.0 failed to load the oses menu entries.
+
+
+Both 0.12.0/0.11.5 can compile from source:
+
+but 0.12.0 failed to load the oses menu entries, there is nothing to show. and for 0.11.5,
+I failed to figure out how to config the oses menues for different oses.  It cannot automatically detect the 
+oses. While the refind-cd based method can automatically detect the oses. 
+
+ 
+
+
+sudo apt-get build-dep gnu-efi
+$ sudo mount /dev/sda1 /boot/efi
+make -j24
+werner@ubuntu-01:~/refind-0.11.5$ sudo ./refind-install 
+
+After installation, it will give some instructions on doing some adjustments.
+
+According the directory structure of the refind-cd's EFI to rename corresponding files.
+
    
 3. Optionally, for the fallback purpose, copy the subfolder refind under refind-bin to the EFI/ directory, i.e.,
    the same directory which the grub-mkstandalone resides.
