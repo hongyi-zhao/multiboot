@@ -1,3 +1,0 @@
-[submodule "boot/grub/multibootusb.git"]
-	path = boot/grub/multibootusb.git
-	url = https://github.com/hongyi-zhao/multibootusb.git
