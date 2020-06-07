@@ -22,7 +22,7 @@ git branch --set-upstream-to=origin/master master
 git clone https://github.com/hongyi-zhao/multibootusb.git multibootusb.git
 ```
 
-See here for some more advanced usage:
+Some more advanced usages:
 
 ```
 http://www.dolda2000.com/~fredrik/doc/grub2
