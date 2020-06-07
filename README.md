@@ -18,9 +18,9 @@ git branch --set-upstream-to=origin/master master
 
 3. Then use this repo combined with my revised version of [multibootusb](https://github.com/hongyi-zhao/multibootusb.git) on the same partition locally:
 
-`
+```
 git clone https://github.com/hongyi-zhao/multibootusb.git multibootusb.git
-`
+```
 
 See here for some more advanced usage:
 
