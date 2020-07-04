@@ -21,6 +21,11 @@ With the above method, there is no need to creating nvram entries with efibootmg
 set boot/esp flag for the efi partitions.  Furthermore, only the refind-cd's EFI sub-directory need to be put on a 
 fat32 root partition, all other stuff can use more mordern file systems, say ext4.
 
+3. In order to ensure the maximum portability, for tasks such as searching the OSes, 
+   includes all disks; for other tasks such as finding the bootable installation images,
+   only includes the disk where the EFI/grub-mkstandalone/grubx64.efi used for booting the computer is located.
+   
+
 
     
 Compile and install using source code:
