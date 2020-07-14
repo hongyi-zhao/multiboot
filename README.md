@@ -1,11 +1,9 @@
 # multiboot
 
 
-1. Use the first partition's formatted with fat32 filesystem to populate the EFI folder extracted from the 
-[refind](https://sourceforge.net/projects/refind/files/)'s CD-R image. The most recently worked version is [0.11.5](https://sourceforge.net/projects/refind/files/0.11.5/refind-cd-0.11.5.zip/download) based on my tests with the methods described here.
-See doc/README for more info.
+1. Do the settings according the notes here: doc/README. 
 
-2. Use the second partition formatted with ext4 to populate this repo locally. 
+2. Use the first partition formatted with ext4 to populate this repo locally. 
 
 
 ```
