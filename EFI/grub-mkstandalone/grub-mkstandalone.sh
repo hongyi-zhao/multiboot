@@ -73,7 +73,7 @@ if ! dpkg -s grub-efi >/dev/null 2>&1; then
   sudo apt-get install grub-efi
 fi
 
-grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='fat part_msdos part_gpt ext2 btrfs probe regexp search configfile' boot/grub/grub.cfg=./boot/grub/grub.cfg
+grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='fat ntfs part_msdos part_gpt ext2 btrfs probe regexp search configfile' boot/grub/grub.cfg=./boot/grub/grub.cfg
 
 
 
