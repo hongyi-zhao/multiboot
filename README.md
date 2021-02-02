@@ -1,6 +1,6 @@
 # multiboot
 
-1. Set up according to the instructions here: doc/README. 
+1. Set up according to the instructions [here](https://github.com/hongyi-zhao/multiboot/blob/master/doc/README). 
 2. Clone this reop onto a separate ext4 partitiono locally. 
 
 ```
