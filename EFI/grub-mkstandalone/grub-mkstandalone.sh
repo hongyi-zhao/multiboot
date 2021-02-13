@@ -1,60 +1,68 @@
 #!/usr/bin/env bash
-# Obtain the canonicalized absolute dirname where the script resides.
-# Both readlink and realpath can do the trick.
-topdir=$(
-cd -P -- "$(dirname -- "$(realpath -e -- "${BASH_SOURCE[0]}")" )" &&
-pwd -P
-) 
+#https://refspecs.linuxfoundation.org/FHS_3.0/fhs-3.0.html#usrlibexec
+#https://groups.google.com/g/comp.unix.shell/c/2Wvk1O8ReG0
+#pyenv.git grep -Po -ihR  '\${bash_source[^}]+}' . | sort -u
+#echo ${BASH_SOURCE} ${BASH_SOURCE[*]} ${BASH_SOURCE[@]} ${#BASH_SOURCE[@]} 
+#The command `readlink -e' is equivalent to `realpath -e'. 
 
-# In the following method, the $script_dirname is equivalent to $topdir otained above in this script:
-script_realpath="$(realpath -e -- "${BASH_SOURCE[0]}")"
+#https://unix.stackexchange.com/questions/68484/what-does-1-mean-in-a-shell-script-and-how-does-it-differ-from
+#I summarized Stéphane Chazelas' answer:
 
-if [[ "$(realpath -e -- "${BASH_SOURCE[0]}")" =~ ^(.*)/(.*)$ ]]; then
-  script_dirname="${BASH_REMATCH[1]}"
-  script_name="${BASH_REMATCH[2]}"
-  #echo script_dirname="$script_dirname"
-  #echo script_name="$script_name"
-  # . not appeared in script_name at all.
-  if [[ "$script_name"  =~ ^([^.]*)$ ]]; then
-    script_basename="$script_name"
-    #echo script_basename="$script_basename"
-  else
-    # . appeared in script_name. 
-    # As far as filename is concerned, when . is used as the last character, it doesn't have any spefical meaning.
-    # Including . as the beginning character.
-    if [[ "$script_name"  =~ ^([.].*)$ ]]; then
-      script_extname="$script_name"
-      #echo script_extname="$script_extname"
-    # Including . but not as the beginning/trailing character.
-    elif [[ "$script_name"  =~ ^([^.].*)[.]([^.]+)$  ]]; then
-      script_basename="${BASH_REMATCH[1]}"
-      script_extname="${BASH_REMATCH[2]}"
-      #echo script_basename="$script_basename"
-      #echo script_extname="$script_extname"
-    fi
-  fi
-fi
+#    ${1:+"$@"}' test if $1 null or unset
+#    ${1+"$@"}' test if $1 unset
 
-#https://unix.stackexchange.com/questions/18886/why-is-while-ifs-read-used-so-often-instead-of-ifs-while-read
+#man bash
+#  Parameter Expansion
+#       When  not  performing  substring expansion, using the forms documented below (e.g., :-), bash
+#       tests for a parameter that is unset or null.  Omitting the colon results in a test only for a
+#       parameter that is unset.
 
-# software/anti-gfw/not-used/vpngate-relative/ecmp-vpngate/script/ovpn-traverse.sh
-# man find:
-# -printf format
-# %f     File's name with any leading directories removed (only the last element).
-# %h     Leading directories of file's name (all but the last element).  
-# If the file name contains  no  slashes
-#             (since it is in the current directory) the %h specifier expands to `.'.       
-# %H     Starting-point under which file was found.  
-# %p     File's name.
-# %P     File's name with the name of the starting-point under which it was found removed.
+#       ${parameter:-word}
+#              Use  Default  Values.  If parameter is unset or null, the expansion of word is substi‐
+#              tuted.  Otherwise, the value of parameter is substituted.
+#      ${parameter:+word}
+#              Use Alternate Value.  If parameter is null or unset, nothing is substituted, otherwise
+#              the expansion of word is substituted.
 
-if [[ $script_extname == "sh" ]]; then
-  if [ -d "$topdir/$script_basename" ]; then  
-    cd $topdir/$script_basename
-    ncore=$(sudo dmidecode -t 4 | grep 'Core Enabled:' | awk '{a+=$NF}END{ print a }')
-  fi
-  cd $topdir
-fi
+#echo $# ${1:-${BASH_SOURCE[0]}}
+#return 0 2>/dev/null || exit 0
+
+#https://groups.google.com/g/comp.unix.shell/c/tof4eopmdU8
+#Pure bash shell implementation for: $(basename "${1:-${BASH_SOURCE[0]}}")
+unset scriptdir_realpath
+unset script_realdirname script_dirname
+unset script_realname script_name
+unset script_realpath script_path
+unset pkg_realpath
+unset script_realbasename script_basename
+unset script_realextname script_extname
+
+
+scriptdir_realpath=$(cd -P -- "$(dirname -- "${1:-${BASH_SOURCE[0]}}")" && pwd -P)
+
+script_realdirname=$(dirname "$(realpath -e "${1:-${BASH_SOURCE[0]}}")")
+script_dirname=$(cd -- "$(dirname -- "${1:-${BASH_SOURCE[0]}}")" && pwd)
+
+script_realname=$(basename "$(realpath -e "${1:-${BASH_SOURCE[0]}}")")
+script_name=$(basename "${1:-${BASH_SOURCE[0]}}")
+
+#https://groups.google.com/g/comp.unix.shell/c/tof4eopmdU8/m/_p9kLoBgCwAJ
+#Unfortunately, the #, ##, %% and % operators can't be used with
+#general expressions.  They only can be applied to variable names. 
+#But you can achieve the wanted result in two steps: 
+
+#script_name="${1:-${BASH_SOURCE[0]}}" && script_name="${script_name2##*/}" 
+
+script_realpath=$script_realdirname/$script_realname
+script_path=$script_dirname/$script_name
+
+pkg_realpath=${script_realpath%.*}
+
+script_realbasename=${script_realname%.*}
+script_basename=${script_name%.*}
+
+script_realextname=${script_realname##*.}
+script_extname=${script_name##*.}
 
 
 
@@ -70,12 +78,11 @@ fi
 #另外，当使用grub-mkstandalone的时候，还会自动预加载 memdisk 、tar 两个模块。
 
 if ! dpkg -s grub-efi >/dev/null 2>&1; then
-  sudo apt-get install grub-efi
+  sudo apt-get install -y grub-efi
 fi
 
-grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='fat ntfs part_msdos part_gpt ext2 btrfs probe regexp search configfile' boot/grub/grub.cfg=./boot/grub/grub.cfg
-
-
+#https://superuser.com/questions/479040/from-grub2-boot-an-iso-in-an-lvm2-logical-volume
+grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='lvm fat ntfs part_msdos part_gpt ext2 btrfs probe regexp search configfile' boot/grub/grub.cfg=./boot/grub/grub.cfg
 
 
 
