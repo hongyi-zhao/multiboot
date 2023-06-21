@@ -20,12 +20,20 @@ combining the usage of grub2 and refind-cd:
    
    EFI/grub-mkstandalone/
 
-2. Mount the refind-cd and then copy its EFI sub-directory onto the a partition formated with fat32 located in the same disk with the step 1. 
+2. 
+
+在上述步骤的同一个硬盘上，做一个fat32的 esp 分区：
+werner@X10DAi:~$ sudo apt install mtools dosfstools
+# 格式化一个 100M作用的 fat32分区即可： 
+werner@X10DAi:~$ sudo gparted 
+
+Mount the refind-cd and then copy its EFI sub-directory onto the a partition formated with fat32 located in the same disk with the step 1. 
   
 With the above method, there is no need to creating nvram entries with efibootmgr and   
 set boot/esp flag for the efi partitions. Furthermore, only the refind-cd's EFI sub-directory need to be put on a 
 fat32 root partition, all other stuff can use more mordern file systems, say ext4.
 
+or：
 上面描述的操作，实际上对应于下面的步骤：
 ===
 https://www.rodsbooks.com/refind/installing.html#linux
