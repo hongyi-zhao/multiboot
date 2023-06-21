@@ -1,5 +1,17 @@
+1). 一些相关文档说明：
+
+https://sourceforge.net/projects/refind/files/
+https://www.rodsbooks.com/refind/
+
+下面的步骤可以重点参考：
+https://www.rodsbooks.com/refind/installing.html#linux
+
+https://askubuntu.com/questions/743095/how-to-prepare-a-disk-on-an-efi-based-pc-for-ubuntu
+
 http://www.rodsbooks.com/refind/getting.html 
 https://sourceforge.net/projects/refind/files/
+
+2).
 
 Based on the discussion with the author of refind, I deduced the following method which
 combining the usage of grub2 and refind-cd:
@@ -9,25 +21,25 @@ combining the usage of grub2 and refind-cd:
    EFI/grub-mkstandalone/
 
 2. Mount the refind-cd and then copy its EFI sub-directory onto the second-to-last partition formated with fat32. 
-   For the purpose of fault tolerance, also dd a copy of the refind-flashdrive version onto 
-   the last partition of the same harddisk as following.
-   
-   sudo ddrescue -fy refind-flashdrive-0.12.0.img /dev/xxxn #(say, sdb7)
-    
-   But only using the refind-flashdrive version as above, it can't found the boot loaders on the harddisks automatically.  
-
-
+  
 With the above method, there is no need to creating nvram entries with efibootmgr and   
-set boot/esp flag for the efi partitions.  Furthermore, only the refind-cd's EFI sub-directory need to be put on a 
+set boot/esp flag for the efi partitions. Furthermore, only the refind-cd's EFI sub-directory need to be put on a 
 fat32 root partition, all other stuff can use more mordern file systems, say ext4.
+
+上面描述的操作，实际上对应于下面的步骤：
+===
+https://www.rodsbooks.com/refind/installing.html#linux
+
+1. Type cp -r refind /boot/efi/EFI/ from the refind-version directory in which the refind directory exists. This copies all the files that rEFInd needs to work. Note that this includes all of rEFInd's drivers. This command also copies the rEFInd binaries as signed by me; if you prefer to re-sign the binaries yourself, you'll have to do so before or during the copy operation, as described on the Managing Secure Boot page.
+===
+
+区别在于，我的操作直接使用 iso 上的EFI目录来替换硬盘上的EFI目录。而refind 的手册中的安装说明，则是将iso上的refind目录整体copy到硬盘上的EFI目录下。
 
 3. In order to ensure the maximum portability, for tasks such as searching the OSes, 
    includes all disks; for other tasks such as finding the bootable installation images,
    only includes the disk where the EFI/grub-mkstandalone/grubx64.efi used for booting the computer is located.
    
 
-
-    
 Compile and install using source code:
 
 sudo apt-get build-dep gnu-efi
@@ -40,8 +52,3 @@ $ sudo ./refind-install
 After installation, it will give some instructions on doing some adjustments.
 
 According the directory structure of the refind-cd's EFI sub-directory to rename corresponding files.
-
-
-   
-
-
