@@ -1,4 +1,4 @@
-1). 一些相关文档说明：
+1. 一些相关文档说明：
 
 https://sourceforge.net/projects/refind/files/
 https://www.rodsbooks.com/refind/
@@ -11,16 +11,16 @@ https://askubuntu.com/questions/743095/how-to-prepare-a-disk-on-an-efi-based-pc-
 http://www.rodsbooks.com/refind/getting.html 
 https://sourceforge.net/projects/refind/files/
 
-2).
+2.
 
 Based on the discussion with the author of refind, I deduced the following method which
 combining the usage of grub2 and refind-cd:
 
-1. Make the following stuff according the notes there:
+1). Make the following stuff according the notes there:
    
    EFI/grub-mkstandalone/
 
-2. 
+2). 
 
 在上述步骤的同一个硬盘上，做一个fat32的 esp 分区：
 werner@X10DAi:~$ sudo apt install mtools dosfstools
@@ -141,7 +141,7 @@ $ df /boot/efi
 如果不存在这样的挂载点，则直接使用相应的磁盘路径即可。
 
 
-3. In order to ensure the maximum portability, for tasks such as searching the OSes, 
+3). In order to ensure the maximum portability, for tasks such as searching the OSes, 
    includes all disks; for other tasks such as finding the bootable installation images,
    only includes the disk where the EFI/grub-mkstandalone/grubx64.efi used for booting the computer is located.
    
@@ -160,14 +160,13 @@ After installation, it will give some instructions on doing some adjustments.
 According the directory structure of the refind-cd's EFI sub-directory to rename corresponding files.
 
 
-4. 根据我的经历， usb 启动盘的识别挑usb口。基于下面的环境测试：
+4). 根据我的经历， usb 启动盘的识别挑usb口。基于下面的环境测试：
 
 $ inxi -S
 System:
   Host: X10DAi Kernel: 5.19.0-21-generic x86_64 bits: 64 Desktop: GNOME 43.0
     Distro: Ubuntu 22.10 (Kinetic Kudu)
 
-用usb 3.0盘做的基于refind 及 EFI/grub-mkstandalone 集成的方法的启动盘，只有用主板后置面板上的usb3.0口才可以成功启动。 
-
+用usb 3.0盘做的基于refind 及 EFI/grub-mkstandalone 集成的方法的启动盘，只有用主板后置面板上的usb3.0口才可以成功启动。
 
 
