@@ -26,15 +26,66 @@ combining the usage of grub2 and refind-cd:
 werner@X10DAi:~$ sudo apt install mtools dosfstools
 # 格式化一个 100M作用的 fat32分区即可： 
 werner@X10DAi:~$ sudo gparted 
-
+# 实际测试，这步没有必要：
 set boot/esp flag for the efi partition
 
-Mount the refind-cd and then copy its EFI sub-directory onto the a partition formated with fat32 located in the same disk with the step 1. 
-  
-create nvram entries with efibootmgr
-  werner@X10DAi:~$ sudo efibootmgr -c -l \\EFI\\refind\\refind_x64.efi -L rEFInd
 
-or：
+# 下面是关键步骤：
+
+基于rsync的操作：
+mkdir /tmp/aa && sudo mount /dev/sda3 /tmp/aa/
+
+挂载  refind-cd-0.14.0.2.iso 
+
+method 1:
+werner@X10DAi:/media/werner/rEFInd_0.14.0.2$ sudo rm -fr /tmp/aa/EFI/
+werner@X10DAi:/media/werner/rEFInd_0.14.0.2$ sudo rsync -avP --delete --mkpath ./refind/ /tmp/aa/EFI/boot/
+cd /tmp/aa/EFI/boot/
+sudo mv refind_x64.efi bootx64.efi
+
+or
+method 2:
+werner@X10DAi:/media/werner/rEFInd_0.14.0.2$ sudo rm -fr /tmp/aa/EFI/
+sudo rsync -avP --delete --mkpath ./EFI/ /tmp/aa/EFI/
+
+若能够引导成功，则重启后，就会有下面的条目：
+
+werner@X10DAi:/tmp/aa/EFI/boot$ sudo efibootmgr -v|grep -i '\*.*hd'
+Boot0006* UEFI OS	HD(3,GPT,e57a46e5-4154-4220-b186-082bbc3edd95,0x3ded2800,0x32000)/File(\EFI\BOOT\BOOTX64.EFI)..BO
+
+
+# 下面是一些尝试，实际上没有必要执行：
+werner@X10DAi:~$ sudo efibootmgr -Bb 0005
+werner@X10DAi:~$ sudo efibootmgr -Bb 0006
+werner@X10DAi:~$ sudo efibootmgr -ab 0004
+
+werner@X10DAi:~$ sudo efibootmgr -v
+BootCurrent: 0006
+Timeout: 1 seconds
+BootOrder: 0003,0002,0004
+Boot0002  Network Card	BBS(Network,,0x0)..GO..NO........q.I.B.A. .G.E. .S.l.o.t. .0.4.0.0. .v.1.5.7.8.........................rN.D+..,.\...........B..Gd-.;.A..MQ..L.I.B.A. .G.E. .S.l.o.t. .0.4.0.0. .v.1.5.7.8........BO
+Boot0003* UEFI: Built-in EFI Shell	VenMedia(5023b95c-db26-429b-a648-bd47664c8012)..BO
+Boot0004* Hard Drive	BBS(HD,,0x0)..GO..NO........o.W.D.C. . .W.D.S.1.0.0.T.2.B.0.A.-.0.0.S.M.5.0....................A...........................>..Gd-.;.A..MQ..L.9.1.5.1.3.3.6.4.9.7.6.0. . . . . . . . ........BO
+
+重启之后，就会成为类似下面的设置：
+werner@X10DAi:~$ sudo efibootmgr -Ab 0005
+werner@X10DAi:~$ sudo efibootmgr -ab 0006
+
+werner@X10DAi:~$ sudo efibootmgr -v
+BootCurrent: 0006
+Timeout: 1 seconds
+BootOrder: 0005,0006,0003,0002,0004
+Boot0002  Network Card	BBS(Network,,0x0)..GO..NO........q.I.B.A. .G.E. .S.l.o.t. .0.4.0.0. .v.1.5.7.8.........................rN.D+..,.\...........B..Gd-.;.A..MQ..L.I.B.A. .G.E. .S.l.o.t. .0.4.0.0. .v.1.5.7.8........BO
+Boot0003* UEFI: Built-in EFI Shell	VenMedia(5023b95c-db26-429b-a648-bd47664c8012)..BO
+Boot0004  Hard Drive	BBS(HD,,0x0)..GO..NO........o.W.D.C. . .W.D.S.1.0.0.T.2.B.0.A.-.0.0.S.M.5.0....................A...........................>..Gd-.;.A..MQ..L.9.1.5.1.3.3.6.4.9.7.6.0. . . . . . . . ........BO
+Boot0005* UEFI OS	HD(3,GPT,e57a46e5-4154-4220-b186-082bbc3edd95,0x3ded2800,0x32000)/File(\EFI\BOOT\BOOTIA32.EFI)..BO
+Boot0006* UEFI OS	HD(3,GPT,e57a46e5-4154-4220-b186-082bbc3edd95,0x3ded2800,0x32000)/File(\EFI\BOOT\BOOTX64.EFI)..BO
+
+# 这个也没有必要：  
+werner@X10DAi:~$ sudo efibootmgr -c -l \\EFI\\refind\\refind_x64.efi -L rEFInd
+
+
+ref：
 官方指南推荐的步骤：
 ===
 https://www.rodsbooks.com/refind/installing.html#linux
