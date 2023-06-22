@@ -27,20 +27,54 @@ werner@X10DAi:~$ sudo apt install mtools dosfstools
 # 格式化一个 100M作用的 fat32分区即可： 
 werner@X10DAi:~$ sudo gparted 
 
+set boot/esp flag for the efi partition
+
 Mount the refind-cd and then copy its EFI sub-directory onto the a partition formated with fat32 located in the same disk with the step 1. 
   
-With the above method, there is no need to creating nvram entries with efibootmgr and   
-set boot/esp flag for the efi partitions. Furthermore, only the refind-cd's EFI sub-directory need to be put on a 
-fat32 root partition, all other stuff can use more mordern file systems, say ext4.
+create nvram entries with efibootmgr
+  werner@X10DAi:~$ sudo efibootmgr -c -l \\EFI\\refind\\refind_x64.efi -L rEFInd
 
 or：
-上面描述的操作，实际上对应于下面的步骤：
+官方指南推荐的步骤：
 ===
 https://www.rodsbooks.com/refind/installing.html#linux
 
+Installing rEFInd Manually Using Linux
+
+On a UEFI-based PC, you'll normally install rEFInd to the ESP, which is usually mounted at /boot/efi. You can verify that this is the case by using the df command:
+
+$ df /boot/efi
+Filesystem     1K-blocks  Used Available Use% Mounted on
+/dev/sda1         191284 16604    174681   9% /boot/efi
+
+This example shows that /dev/sda1 is mounted at /boot/efi, which is a typical configuration. (The ESP can be on another disk or partition, but /dev/sda1 is the most common place for an ESP.) If your output shows /boot or / under the Mounted on column, then your ESP isn't mounted. (An exception is if you're mounting the ESP at /boot. This is an unusual configuration. If you're using it, you can proceed, making suitable adjustments to subsequent commands.) If you get a df: `/boot/efi': No such file or directory error message, then the /boot/efi directory doesn't even exist. In such cases, you may need to jump through some extra hoops, as described on my EFI Boot Loader Installation page.
+
 Assuming the ESP is mounted at /boot/efi, you can install the rEFInd files as follows (you must be root to issue these commands, or precede each of them with sudo):
 
-1. Type cp -r refind /boot/efi/EFI/ from the refind-version directory in which the refind directory exists. This copies all the files that rEFInd needs to work. Note that this includes all of rEFInd's drivers. This command also copies the rEFInd binaries as signed by me; if you prefer to re-sign the binaries yourself, you'll have to do so before or during the copy operation, as described on the Managing Secure Boot page.
+1.    Type cp -r refind /boot/efi/EFI/ from the refind-version directory in which the refind directory exists. This copies all the files that rEFInd needs to work. Note that this includes all of rEFInd's drivers. This command also copies the rEFInd binaries as signed by me; if you prefer to re-sign the binaries yourself, you'll have to do so before or during the copy operation, as described on the Managing Secure Boot page.
+2.    Type cd /boot/efi/EFI/refind to change into rEFInd's new directory on the ESP.
+3.    You may optionally remove the rEFInd binaries for the CPU types you're not using. For instance, you might type rm refind_ia32.efi refind_aa64.efi to remove the IA32 and AARCH64 binaries if you're using an x86-64 (AMD64, X64) system.
+4.    Similarly, you may optionally remove the drivers subdirectories for the CPU types you're not using. For instance, you could type rm -r drivers_ia32 drivers_aa64 to remove the x86 and ARM64 drivers from an x86-64 system.
+5.    I strongly recommend that you remove some or all of the drivers for the architecture you are using. If you don't need them, they'll slow down the start process, and worse, loading unnecessary drivers can cause some systems to hang or interfere with the drivers you do need. See the page on drivers for more on this topic. Chances are you need only one filesystem driver, for whatever filesystem holds your Linux kernels.
+6.    Rename the configuration file by typing mv refind.conf-sample refind.conf. Consult the Editing the rEFInd Configuration File page for information on how to adjust your options.
+
+
+    
+7.    On a UEFI-based system, type efibootmgr -c -l \\EFI\\refind\\refind_x64.efi -L rEFInd to add rEFInd to your EFI's list of available boot loaders, which it stores in NVRAM. Adjust the path to the binary as required if you install somewhere else. You may also need to include additional options if your ESP isn't on /dev/sda1 or if your configuration is otherwise unusual; consult the efibootmgr man page for details. You may need to install this program on some systems; it's a standard part of most distributions' repositories. Also, if you're installing in Secure Boot mode, you must normally register shim.efi rather than the rEFInd binary, and rename refind_x64.efi to grubx64.efi. Shim 0.7 and later enables you to keep rEFInd's usual name by adding a -u "shim.efi refind_x64.efi" option to your efibootmgr command line, though. Change the filenames to the ones used by your actual Shim and rEFInd binaries, respectively.
+    
+    Weird: A bug exists in some Lenovo computers (and perhaps in some others, too) that causes the firmware's boot manager to refuse to boot any boot loader that doesn't have the name Windows Boot Manager or Red Hat Enterprise Linux. If you have such a system, you must pass one of those names (in quotes) rather than rEFInd to efibootmgr via its -L option. This bug was reported to Lenovo in mid-November 2012, and by late 2013, at least some Lenovos were mercifully free of this bug.
+       
+  werner@X10DAi:~$ sudo efibootmgr -c -l \\EFI\\refind\\refind_x64.efi -L rEFInd
+        
+ 8.   If other boot loaders are already installed, you can use efibootmgr to adjust their boot order. For instance, efibootmgr -o 3,7,2 sets the firmware to try boot loader #3 first, followed by #7, followed by #2. (The program should have displayed a list of boot loaders when you added yours in the preceding step.) Place rEFInd's number first to set it as the default boot program.
+
+Note the use of doubled-up backslashes (\\) rather than forward slashes (/) in the directory separators when using efibootmgr. This command will work on most systems that are already booted into EFI mode; however, it won't work if you're booted in BIOS mode. You may also need to add options if your ESP is in some unusual location or if your system is unusual in some way. Consult the efibootmgr man page if you need help.
+
+On some systems, efibootmgr won't do what you expect. On such systems, you may have better luck renaming the rEFInd files, as described in the Alternative Naming Options section.
+
+See below for more details:
+https://www.rodsbooks.com/refind/installing.html#naming
+
 ===
 
 区别在于，我的操作直接使用 iso 上的EFI目录来替换硬盘上的EFI目录。而refind 的手册中的安装说明，则是将iso上的refind目录整体copy到硬盘上的EFI目录下。
