@@ -18,7 +18,7 @@
 #ii  grub-efi-amd64-signed                            1.187.3+2.06-2ubuntu14.1                 amd64        GRand Unified Bootloader, version 2 (EFI-AMD64 version, signed)
 
 
-# ./grub.cfg 文件只在下面的命令运行是需要，之后就会被嵌入到 grubx64.efi 中，因而在后续运行中不再需要。
+# 在下面的命令中要求 grub.cfg 文件位于和 grubx64.efi 相同的目录下，即可（也可以使用其他的相对路径）：
 grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='lvm fat ntfs part_msdos part_gpt ext2 btrfs probe regexp search configfile' boot/grub/grub.cfg=./grub.cfg
 
 
