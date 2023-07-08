@@ -11,13 +11,8 @@
 #这些模块够用就行，后续需要再加载即可。
 #另外，当使用grub-mkstandalone的时候，还会自动预加载 memdisk 、tar 两个模块。
 
-if ! dpkg -s grub-efi >/dev/null 2>&1; then
-  sudo apt-get install -y grub-efi
-fi
-
 #https://superuser.com/questions/479040/from-grub2-boot-an-iso-in-an-lvm2-logical-volume
 grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='lvm fat ntfs part_msdos part_gpt ext2 btrfs probe regexp search configfile' boot/grub/grub.cfg=./boot/grub/grub.cfg
-
 
 
 #
