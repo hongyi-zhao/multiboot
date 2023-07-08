@@ -1,21 +1,19 @@
 #!/usr/bin/env bash
 
-#接受相对路径，制作完成后，用下面的命令检查：
-#$ strings grub-mkstandalone-x86_64.efi | grep -E '^(insmod|configfile)'
-# 需要使用下面的选项，否则device，partition 名解析不出来：
-#  --modules=MODULES      pre-load specified modules MODULES
-# --modules='fat part_msdos part_gpt ext2 search_fs_uuid configfile'
-
-
-#又加入以下预加载的模块：
-#这些模块够用就行，后续需要再加载即可。
-#另外，当使用grub-mkstandalone的时候，还会自动预加载 memdisk 、tar 两个模块。
-
 #https://superuser.com/questions/479040/from-grub2-boot-an-iso-in-an-lvm2-logical-volume
 #$ dpkg -l |grep grub-efi
 #ii  grub-efi-amd64                                   2.06-2ubuntu14.1                         amd64        GRand Unified Bootloader, version 2 (EFI-AMD64 version)
 #ii  grub-efi-amd64-bin                               2.06-2ubuntu14.1                         amd64        GRand Unified Bootloader, version 2 (EFI-AMD64 modules)
 #ii  grub-efi-amd64-signed                            1.187.3+2.06-2ubuntu14.1                 amd64        GRand Unified Bootloader, version 2 (EFI-AMD64 version, signed)
+
+# 需要使用下面的选项，否则device，partition名解析不出来：
+#  --modules=MODULES      pre-load specified modules MODULES
+# --modules='fat part_msdos part_gpt ext2 search_fs_uuid configfile'
+#又加入以下预加载的模块：
+#这些模块够用就行，后续需要再加载即可。
+#另外，从下面的信息可知，当使用grub-mkstandalone的时候，还会自动预加载 memdisk、tar两个模块。
+#$ grub-mkstandalone -O x86_64-efi -o grubx64.efi --modules='lvm fat ntfs part_msdos part_gpt ext2 btrfs probe regexp search configfile' boot/grub/grub.cfg=./grub.cfg -v |& grep grub-mkimage
+#grub-mkstandalone: info: grub-mkimage --directory '/usr/lib/grub/x86_64-efi' --prefix '(memdisk)/boot/grub' --output 'grubx64.efi'  --dtb '' --sbat '' --format 'x86_64-efi' --compression 'auto'   --memdisk '/tmp/grub.ZRQtKv' 'lvm' 'fat' 'ntfs' 'part_msdos' 'part_gpt' 'ext2' 'btrfs' 'probe' 'regexp' 'search' 'configfile' 'memdisk' 'tar' 
 
 
 # 在下面的命令中要求 grub.cfg 文件位于和 grubx64.efi 相同的目录下，即可（也可以使用其他的相对路径）：
