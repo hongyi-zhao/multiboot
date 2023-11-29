@@ -44,9 +44,31 @@ cd /tmp/aa/EFI/boot/
 sudo mv refind_x64.efi bootx64.efi
 
 or
-method 2:
+method 2: (这个是最简单因而推荐使用的方法。)
 werner@X10DAi:/media/werner/rEFInd_0.14.0.2$ sudo rm -fr /tmp/aa/EFI/
 sudo rsync -avP --delete --mkpath ./EFI/ /tmp/aa/EFI/
+
+
+进一步分析iso上的EFI/boot/ 和 refind 两个目录中的内容，发现确实是对应的，只不过某些文件的命名做了稍微改动： 
+werner@X10DAi:/media/werner/rEFInd_0.14.0.2$ diff EFI/boot/ refind | grep -Ev '^Common|\.conf$'
+Only in EFI/boot/: bootaa64.efi
+Only in EFI/boot/: bootia32.efi
+Only in EFI/boot/: bootx64.efi
+Only in refind: refind_aa64.efi
+Only in refind: refind_ia32.efi
+Only in refind: refind_x64.efi
+Only in refind: tools_aa64
+Only in refind: tools_ia32
+Only in refind: tools_x64
+werner@X10DAi:/media/werner/rEFInd_0.14.0.2$ diff EFI/boot/bootaa64.efi refind/refind_aa64.efi
+werner@X10DAi:/media/werner/rEFInd_0.14.0.2$ diff EFI/boot/bootia32.efi refind/refind_ia32.efi
+werner@X10DAi:/media/werner/rEFInd_0.14.0.2$ diff EFI/boot/bootx64.efi refind/refind_x64.efi
+werner@X10DAi:/media/werner/rEFInd_0.14.0.2$ diff EFI/tools/gptsync_ia32.efi refind/tools_ia32/gptsync_ia32.efi
+werner@X10DAi:/media/werner/rEFInd_0.14.0.2$ diff EFI/tools/gptsync_x64.efi refind/tools_x64/gptsync_x64.efi
+werner@X10DAi:/media/werner/rEFInd_0.14.0.2$ 
+
+
+
 
 若能够引导成功，则重启后，就会有下面的条目：
 
