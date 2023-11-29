@@ -1,7 +1,7 @@
-1. 一些相关文档说明：
-
+1. 下载及相关文档：
 https://sourceforge.net/projects/refind/files/
 https://www.rodsbooks.com/refind/
+https://versaweb.dl.sourceforge.net/project/refind/0.14.0.2/refind-cd-0.14.0.2.zip
 
 下面的步骤可以重点参考：
 https://www.rodsbooks.com/refind/installing.html#linux
@@ -160,8 +160,9 @@ After installation, it will give some instructions on doing some adjustments.
 According the directory structure of the refind-cd's EFI sub-directory to rename corresponding files.
 
 
-4). 根据我的经历， usb 启动盘的识别挑usb口。基于下面的环境测试：
+4). 关于 usb 启动盘的识别是否挑usb口的问题，我的测试结果如下：
 
+a）
 $ inxi -S
 System:
   Host: X10DAi Kernel: 5.19.0-21-generic x86_64 bits: 64 Desktop: GNOME 43.0
@@ -169,4 +170,4 @@ System:
 
 用usb 3.0盘做的基于refind 及 EFI/grub-mkstandalone 集成的方法的启动盘，只有用主板后置面板上的usb3.0口才可以成功启动。
 
-
+b）再后来的测试，用 refind-cd-0.14.0.2.iso 直接做成启动盘，则并没有发现挑usb口的现象。
