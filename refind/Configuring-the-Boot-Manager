@@ -1,0 +1,31 @@
+# Append to refind.conf
+
+# For 基于 cgroup v2, 使用自己编译的slurm的方法:
+# Public/repo/github.com/SchedMD/slurm.git.sh
+
+#Failed to start Ubuntu 22.04.4 LTS with refind customized menu entry.
+#https://mail.google.com/mail/u/1/?ogbl#inbox/KtbxLthhsLvxVzDzrVwFFNVkpFqDhcBLKg
+# Added by me:
+# $ grep ^UUID /etc/fstab | awk '$2 == "/"'
+#UUID=c78aa9ff-6238-430e-adb3-2c256642a22d /               ext4    errors=remount-ro 0       1
+
+#$ blkid
+#/dev/nvme1n1p3: UUID="c78aa9ff-6238-430e-adb3-2c256642a22d" BLOCK_SIZE="4096" TYPE="ext4" PARTUUID="f72ef8e6-cc64-461c-9133-62000d05ab3f"
+#PARTUUID 通常可以看作是分区的 GUID（全局唯一标识符）。在 Linux 系统中，每个分区都有一个唯一的 PARTUUID，它与 UUID（文件系统的唯一性标识符）不同。
+
+#PARTUUID 是分区表中分区的标识符，它在整个系统中是唯一的，通常在 GPT（GUID Partition Table）分区表中使用。
+#UUID 是磁盘格式化后文件系统的标识符，用于唯一标识该文件系统。
+
+#在你的 blkid 命令的输出中，/dev/nvme1n1p3 是一个分区，它具有一个 UUID 和 PARTUUID。这里的 PARTUUID 实际上是该分区在磁盘中的全局唯一标识符，可以用来在系统引导时或者是挂载时精确地指向这个分区，避免由于磁盘顺序变化等原因引发的错误。
+
+# Check it:
+#werner@x13dai-t:~$ cat /proc/cmdline
+#ro cgroup_no_v1=all root=UUID=c78aa9ff-6238-430e-adb3-2c256642a22d initrd=\boot\initrd.img
+menuentry "Ubuntu" {
+    icon     EFI/refind/icons/os_linux.png
+    volume   f72ef8e6-cc64-461c-9133-62000d05ab3f
+    loader   /boot/vmlinuz
+    initrd   /boot/initrd.img
+    options  "ro cgroup_no_v1=all root=UUID=c78aa9ff-6238-430e-adb3-2c256642a22d"
+}
+
