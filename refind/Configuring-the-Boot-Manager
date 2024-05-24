@@ -29,3 +29,47 @@ menuentry "Ubuntu" {
     options  "ro cgroup_no_v1=all root=UUID=c78aa9ff-6238-430e-adb3-2c256642a22d"
 }
 
+
+或者使用下面的更灵活的方法：
+
+You can set kernel parameters in the refind_linux.conf file in the same
+directory as the kernels to which they apply. This is documented here
+(search on refind_linux.conf):
+
+http://www.rodsbooks.com/refind/linux.html
+
+"Boot with standard options"  "ro root=UUID=084f544a-7559-4d4b-938a-b920f59edc7e splash=silent quiet showopts "
+"Boot to single-user mode"    "ro root=UUID=084f544a-7559-4d4b-938a-b920f59edc7e splash=silent quiet showopts single"
+"Boot with minimal options"   "ro root=UUID=084f544a-7559-4d4b-938a-b920f59edc7e"
+# This line is a comment
+
+
+在使用 rEFInd 作为启动管理器时，除了在 refind.conf 中直接修改启动配置之外，也可以使用 refind_linux.conf 文件来管理 Linux 内核的启动参数。这种方法特别有用，因为它允许你针对特定的 Linux 内核维护不同的启动配置，而不必修改全局的 refind.conf 文件。
+
+如何使用 refind_linux.conf
+
+创建 refind_linux.conf 文件： 这个文件通常位于你的 Linux 系统的 /boot 目录下。如果该文件不存在，你可以手动创建它。
+
+配置 refind_linux.conf： 打开你的文本编辑器，添加不同的启动配置行。每行包含一组内核参数，这使得你可以针对不同的场景设置多重启动选项。
+
+例如：
+
+"Boot with standard options"   "ro root=UUID=xxxx-xxxx quiet splash"
+"Boot to single-user mode"     "ro root=UUID=xxxx-xxxx single"
+"Boot with verbose logging"    "ro root=UUID=xxxx-xxxx verbose"
+
+ 
+
+每行的第一部分是一个描述，它会在 rEFInd 的启动菜单中显示为启动选项的名称；第二部分是传递给内核的参数。
+
+使用 refind_linux.conf： 当 rEFInd 准备从一个 Linux 内核启动时，它会检查与该内核位于同一目录的 refind_linux.conf 文件。如果找到，rEFInd 将使用文件中指定的选项来引导 Linux。这种方式让你能够轻松地在不同的引导模式之间选择，而无需在每次启动时手动编辑内核参数。
+优点
+组织性：对于管理多个启动配置，refind_linux.conf 提供了更好的组织性。
+灵活性：可以针对不同的使用场景容易切换不同的启动参数。
+用户友好：在启动菜单中直接选择不同的启动模式，无需记住复杂的内核参数。
+注意事项
+如果你有多个 Linux 系统，每个系统可以有它自己的 refind_linux.conf 文件。
+确保 UUID 和其他内核参数的正确性，错误的参数可能导致系统无法启动。
+
+通过这种方式，你可以更加灵活和有组织地管理不同的启动配置，尤其是在需要对系统进行故障排除或优化时非常有用。
+
