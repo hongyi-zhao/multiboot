@@ -31,7 +31,8 @@ menuentry "Ubuntu" {
 
 
 或者使用下面的更灵活的方法：
-
+#Failed to start Ubuntu 22.04.4 LTS with refind customized menu entry.
+#https://mail.google.com/mail/u/1/?ogbl#inbox/KtbxLthhsLvxVzDzrVwFFNVkpFqDhcBLKg
 You can set kernel parameters in the refind_linux.conf file in the same
 directory as the kernels to which they apply. This is documented here
 (search on refind_linux.conf):
